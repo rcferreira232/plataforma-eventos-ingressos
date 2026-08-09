@@ -15,7 +15,7 @@ O projeto segue o padrão **MVC (Model-View-Controller)**, focado na simplicidad
 - **Framework Web:** Express
 - **ORM / Banco de Dados:** Prisma ORM com PostgreSQL / SQLite
 - **Validação:** Zod
-- **Testes:** Vitest ou Jest com Supertest
+- **Testes:** Jest com Supertest
 
 ## 3. Estrutura de Pastas
 
