@@ -37,6 +37,8 @@ backend/
 
 ## 4. Regras de Implementação e Boas Práticas
 
+Respeitar tipos: Sem erros de tipagem, nem mesmo warnings.
+
 Controllers: Responsáveis estritamente por extrair dados da requisição (body, query, params), validar entradas com Zod, chamar o Model correspondente e retornar a resposta HTTP estruturada.
 
 Models: Responsáveis pela lógica de negócio e interação com o banco de dados via Prisma. Centralizam o acesso aos dados e asseguram a integridade das operações.
