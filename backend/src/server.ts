@@ -1,9 +1,10 @@
 import { app } from "./app.ts";
+import { env } from "./config/env.ts";
 
 const start = async () => {
   try {
-    app.listen(3000, () => {
-      console.log(`Server is running on ${process.env.APP_PORT}`);
+    app.listen(env.port, () => {
+      console.log(`Server is running on ${env.port}`);
     });
   } catch (error) {
     console.error(error);
