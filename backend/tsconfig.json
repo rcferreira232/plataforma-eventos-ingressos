@@ -45,6 +45,8 @@
     "rewriteRelativeImportExtensions": true,
     // "erasableSyntaxOnly": true,
     "noEmit": true,
-    "allowImportingTsExtensions": true
+    "allowImportingTsExtensions": true,
+    "esModuleInterop": true,
+    "ignoreDeprecations": "6.0"
   }
 }
