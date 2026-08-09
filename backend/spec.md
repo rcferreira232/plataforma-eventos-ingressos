@@ -32,7 +32,8 @@ backend/
 │   ├── repositories/      # Camada de acesso a dados e abstração do Prisma
 │   ├── routes/            # Definição das rotas da API
 │   ├── schemas/           # Schemas de validação e contratos de entrada/saída
-│   └── services/          # Lógica de negócio da aplicação
+│   ├── services/          # Lógica de negócio da aplicação
+│   └── tests/             # Testes unitários e de integração
 ```
 
 ## 4. Regras de Implementação e Boas Práticas
