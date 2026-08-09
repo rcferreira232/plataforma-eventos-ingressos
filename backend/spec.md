@@ -51,6 +51,8 @@ Obrigatório: Toda feature crítica deve possuir testes automatizados.
 
 Foco: Priorizar testes de integração utilizando Supertest para validar o fluxo completo da rota (requisição -> model -> banco).
 
+Cobertura: 80% de cobertura de testes.
+
 Isolamento: Testes devem rodar em bancos de dados isolados (containers efêmeros ou banco em memória/sqlite dedicado).
 
 Cobertura mínima: Foco nos fluxos críticos (Criação de eventos, Reserva de assentos, Simulação de pagamento e Validação na portaria).

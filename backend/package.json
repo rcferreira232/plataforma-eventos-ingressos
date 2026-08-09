@@ -11,7 +11,7 @@
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
     "db:studio": "prisma studio",
-    "test": "jest --runInBand --detectOpenHandles"
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --runInBand --detectOpenHandles"
   },
   "keywords": [],
   "author": "",
@@ -35,8 +35,10 @@
     "@types/morgan": "^1.9.10",
     "@types/node": "^26.2.0",
     "@types/pg": "^8.21.0",
+    "@types/supertest": "^7.2.1",
     "jest": "^30.4.2",
     "prisma": "^7.9.1",
+    "supertest": "^7.2.2",
     "ts-jest": "^29.4.12",
     "tsx": "^4.23.11",
     "typescript": "^5.7.3"
