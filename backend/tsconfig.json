@@ -8,6 +8,7 @@
     "rootDirs": ["./src", "./prisma"],
 
     // path aliases
+    "ignoreDeprecations": "6.0",
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"]
@@ -21,7 +22,7 @@
     // "types": [],
     // For nodejs:
     "lib": ["esnext"],
-    "types": ["node"],
+    "types": ["node", "jest"],
     // and npm install -D @types/node
 
     // Other Outputs
@@ -54,8 +55,7 @@
     // "erasableSyntaxOnly": true,
     "noEmit": true,
     "allowImportingTsExtensions": true,
-    "esModuleInterop": true,
-    "ignoreDeprecations": "6.0"
+    "esModuleInterop": true
   },
   "include": ["src/**/*", "prisma/**/*"]
 }
