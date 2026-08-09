@@ -10,5 +10,9 @@ const userService = new UserService(userRepository);
 const userController = new UserController(userService);
 
 userRouter.post("/", userController.create);
+userRouter.get("/", userController.getAll);
+userRouter.get("/:id", userController.getById);
+userRouter.put("/:id", userController.update);
+userRouter.delete("/:id", userController.delete);
 
 export { userRouter };
