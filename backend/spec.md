@@ -39,6 +39,8 @@ backend/
 
 Respeitar tipos: Sem erros de tipagem, nem mesmo warnings.
 
+Evitar uso de comentarios: O código deve ser autoexplicativo, evitando comentários desnecessários.
+
 Não usar else: Evitar o uso de `else` para manter a clareza do fluxo de decisão.
 
 Controllers: Responsáveis estritamente por extrair dados da requisição (body, query, params), validar entradas com Zod, chamar o Model correspondente e retornar a resposta HTTP estruturada.
