@@ -1,1 +1,15 @@
+# Ignore node_modules directory
 /node_modules
+
+# Ignore environment variable files
+.env*
+
+# Ignore coverage reports
+/coverage
+
+# Ignore generated Prisma client files
+/src/generated/prisma
+/generated/prisma
+/.agents
+/.claude
+/.windsurf
