@@ -26,6 +26,7 @@ backend/
 │   ├── app.ts             # Configuração e montagem do app Express
 │   ├── server.ts          # Ponto de entrada da aplicação
 │   ├── config/            # Configurações da aplicação (env, variáveis, setup)
+|   ├── lib/               # Bibliotecas auxiliares (ex: Prisma client)
 │   ├── controllers/       # Processamento de requisições HTTP
 │   ├── middlewares/       # Middlewares de autenticação, tratamento de erro e validação
 │   ├── repositories/      # Camada de acesso a dados e abstração do Prisma
