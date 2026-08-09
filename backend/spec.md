@@ -20,15 +20,18 @@ O projeto segue o padrão **MVC (Model-View-Controller)**, focado na simplicidad
 ## 3. Estrutura de Pastas
 
 ```text
-src/
-├── controllers/      # Processa requisições, valida inputs e chama models
-├── models/           # Lógica de negócio e acesso a dados (integração com Prisma)
-├── routes/           # Definição das rotas e middlewares
-├── middlewares/      # Interceptadores (autenticação, erro, validação)
-├── enums/            # Enumerações utilizadas no sistema
-├── utils/            # Funções auxiliares e constantes
-├── app.ts            # Configuração do app Express
-└── server.ts         # Ponto de entrada da aplicação
+backend/
+├── prisma/                # Esquema do Prisma, migrations e client
+├── src/
+│   ├── app.ts             # Configuração e montagem do app Express
+│   ├── server.ts          # Ponto de entrada da aplicação
+│   ├── config/            # Configurações da aplicação (env, variáveis, setup)
+│   ├── controllers/       # Processamento de requisições HTTP
+│   ├── middlewares/       # Middlewares de autenticação, tratamento de erro e validação
+│   ├── repositories/      # Camada de acesso a dados e abstração do Prisma
+│   ├── routes/            # Definição das rotas da API
+│   ├── schemas/           # Schemas de validação e contratos de entrada/saída
+│   └── services/          # Lógica de negócio da aplicação
 ```
 
 ## 4. Regras de Implementação e Boas Práticas
