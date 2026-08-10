@@ -4,10 +4,16 @@ import { prisma } from "@/libs/prisma";
 
 describe("Testes de Integração de Usuário", () => {
   beforeEach(async () => {
+    await prisma.ticket.deleteMany();
+    await prisma.reservation.deleteMany();
+    await prisma.event.deleteMany();
     await prisma.user.deleteMany();
   });
 
   afterAll(async () => {
+    await prisma.ticket.deleteMany();
+    await prisma.reservation.deleteMany();
+    await prisma.event.deleteMany();
     await prisma.user.deleteMany();
     await prisma.$disconnect();
   });
