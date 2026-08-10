@@ -40,6 +40,12 @@ backend/
 
 Respeitar tipos: Sem erros de tipagem, nem mesmo warnings.
 
+Usar o validate-middleware para validar os schemas antes de chamar o controller.
+
+Usar o error-middleware para tratar os erros.
+
+Usar auth-middleware para autenticação e autorização.
+
 Evitar uso de comentarios: O código deve ser autoexplicativo, evitando comentários desnecessários.
 
 Não usar else: Evitar o uso de `else` para manter a clareza do fluxo de decisão.
