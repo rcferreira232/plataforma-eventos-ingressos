@@ -234,3 +234,9 @@ O seed gera 3 users, armazene os emails nas variaveis de ambiente. Eu fiz um log
   "eventId": "{{id_event}}"
 }
 ```
+
+## 7. Dicas para Postman/Insomnia
+
+- Em cada login, atualize automaticamente os tokens nas variaveis.
+- Caso tome erro de autenticacao, verifique se os tokens estao corretos.
+- Monte uma collection por fluxo: login, eventos, reservas, checkout, ingressos, portaria.
