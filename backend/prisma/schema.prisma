@@ -26,4 +26,70 @@ model User {
   role      Role     @default(CUSTOMER)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  events       Event[]
+  reservations Reservation[]
+}
+
+model Event {
+  id          String   @id @default(cuid())
+  title       String
+  date        DateTime
+  location    String
+  capacity    Int
+  price       Float
+  externalRef String?
+  
+  organizerId String
+  organizer   User     @relation(fields: [organizerId], references: [id])
+  
+  reservations Reservation[]
+  tickets      Ticket[]
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+enum ReservationStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+}
+
+model Reservation {
+  id          String   @id @default(cuid())
+  quantity    Int
+  status      ReservationStatus @default(PENDING)
+  
+  customerId  String
+  customer    User     @relation(fields: [customerId], references: [id])
+  
+  eventId     String
+  event       Event    @relation(fields: [eventId], references: [id])
+  
+  tickets     Ticket[]
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+enum TicketStatus {
+  VALID
+  USED
+  CANCELLED
+}
+
+model Ticket {
+  id            String   @id @default(cuid())
+  code          String   @unique @default(uuid())
+  status        TicketStatus @default(VALID)
+  
+  reservationId String
+  reservation   Reservation @relation(fields: [reservationId], references: [id])
+  
+  eventId       String
+  event         Event       @relation(fields: [eventId], references: [id])
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 }
