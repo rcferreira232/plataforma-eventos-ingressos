@@ -1,4 +1,8 @@
-import { type Prisma, type Ticket } from "@/generated/prisma/client";
+import {
+  type Prisma,
+  type Ticket,
+  type TicketStatus,
+} from "@/generated/prisma/client";
 import { prisma } from "@/libs/prisma";
 
 type TransactionClient = Prisma.TransactionClient;
@@ -29,6 +33,12 @@ export interface ITicketRepository {
   ): Promise<Ticket[]>;
   getByUserId(userId: string): Promise<TicketWithDetails[]>;
   getShareTicketById(ticketId: string): Promise<TicketWithDetails | null>;
+  getByCode(code: string, tx?: TransactionClient): Promise<Ticket | null>;
+  updateStatus(
+    id: string,
+    status: TicketStatus,
+    tx?: TransactionClient,
+  ): Promise<Ticket>;
 }
 
 export class PrismaTicketRepository implements ITicketRepository {
@@ -101,6 +111,26 @@ export class PrismaTicketRepository implements ITicketRepository {
           },
         },
       },
+    });
+  }
+
+  getByCode(
+    code: string,
+    tx: TransactionClient = prisma,
+  ): Promise<Ticket | null> {
+    return tx.ticket.findUnique({
+      where: { code },
+    });
+  }
+
+  updateStatus(
+    id: string,
+    status: TicketStatus,
+    tx: TransactionClient = prisma,
+  ): Promise<Ticket> {
+    return tx.ticket.update({
+      where: { id },
+      data: { status },
     });
   }
 }

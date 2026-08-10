@@ -1,5 +1,6 @@
 import { type Request, type Response, type NextFunction } from "express";
 import { type TicketService } from "@/services/ticket-service";
+import { type ValidateTicketEntryInput } from "@/schemas/ticket-schemas";
 import { BadRequestError, UnauthorizedError } from "@/libs/errors";
 
 export class TicketController {
@@ -46,6 +47,24 @@ export class TicketController {
       res.status(200).json({
         status: "success",
         data: ticket,
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  validateEntry = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
+    try {
+      const payload = req.body as ValidateTicketEntryInput;
+      const result = await this.ticketService.validateTicketEntry(payload);
+
+      res.status(200).json({
+        status: "success",
+        data: result,
       });
     } catch (error) {
       next(error);
