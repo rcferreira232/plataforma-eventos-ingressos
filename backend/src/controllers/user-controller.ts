@@ -1,6 +1,6 @@
 import { type Request, type Response, type NextFunction } from "express";
 import { type UserService } from "@/services/user-service";
-import { createUserSchema, updateUserSchema } from "@/schemas/user-schemas";
+import { type CreateUserInput, type UpdateUserInput } from "@/schemas/user-schemas";
 import { BadRequestError } from "@/libs/errors";
 
 export class UserController {
@@ -12,7 +12,7 @@ export class UserController {
     next: NextFunction,
   ): Promise<void> => {
     try {
-      const validatedData = createUserSchema.parse(req.body);
+      const validatedData = req.body as CreateUserInput;
       const user = await this.userService.createUser(validatedData);
       res.status(201).json({
         status: "success",
@@ -69,7 +69,7 @@ export class UserController {
       if (typeof id !== "string") {
         throw new BadRequestError("Missing or invalid user ID");
       }
-      const validatedData = updateUserSchema.parse(req.body);
+      const validatedData = req.body as UpdateUserInput;
       const user = await this.userService.updateUser(id, validatedData);
       res.status(200).json({
         status: "success",
