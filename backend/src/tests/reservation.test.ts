@@ -6,7 +6,10 @@ import { env } from "@/config/env";
 
 describe("Testes de Integração de Reserva", () => {
   let customerToken: string;
+  let secondCustomerToken: string;
   let eventId: string;
+  let reservationToConfirmId: string;
+  let reservationToDeclineId: string;
 
   beforeAll(async () => {
     await prisma.ticket.deleteMany();
@@ -32,8 +35,26 @@ describe("Testes de Integração de Reserva", () => {
       },
     });
 
+    const secondCustomer = await prisma.user.create({
+      data: {
+        name: "Second Customer",
+        email: "customer2@example.com",
+        password: "hashedpassword123",
+        role: "CUSTOMER",
+      },
+    });
+
     customerToken = jwt.sign(
       { id: customer.id, email: customer.email, role: customer.role },
+      env.jwtSecret,
+    );
+
+    secondCustomerToken = jwt.sign(
+      {
+        id: secondCustomer.id,
+        email: secondCustomer.email,
+        role: secondCustomer.role,
+      },
       env.jwtSecret,
     );
 
@@ -42,7 +63,7 @@ describe("Testes de Integração de Reserva", () => {
         title: "Evento Concorrente",
         date: new Date(),
         location: "Arena Central",
-        capacity: 2,
+        capacity: 20,
         price: 50,
         organizerId: organizer.id,
       },
@@ -112,5 +133,153 @@ describe("Testes de Integração de Reserva", () => {
     });
 
     expect(reservations).toHaveLength(1);
+  });
+
+  it("deve confirmar o checkout, atualizar reserva e emitir ingressos com codigo seguro", async () => {
+    const createReservationResponse = await request(app)
+      .post("/reservations")
+      .set("Authorization", `Bearer ${customerToken}`)
+      .send({
+        eventId,
+        quantity: 2,
+      })
+      .expect(201);
+
+    reservationToConfirmId = createReservationResponse.body.data.id;
+
+    const checkoutResponse = await request(app)
+      .post(`/reservations/${reservationToConfirmId}/checkout`)
+      .set("Authorization", `Bearer ${customerToken}`)
+      .send({
+        decision: "CONFIRM",
+      })
+      .expect(200);
+
+    expect(checkoutResponse.body).toHaveProperty("status", "success");
+    expect(checkoutResponse.body.data.reservation.status).toBe("CONFIRMED");
+    expect(checkoutResponse.body.data.tickets).toHaveLength(2);
+
+    const createdTickets = checkoutResponse.body.data.tickets as Array<{
+      code: string;
+    }>;
+
+    for (const ticket of createdTickets) {
+      expect(ticket.code).toMatch(
+        /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i,
+      );
+    }
+
+    const ticketsFromDb = await prisma.ticket.findMany({
+      where: {
+        reservationId: reservationToConfirmId,
+      },
+    });
+
+    expect(ticketsFromDb).toHaveLength(2);
+  });
+
+  it("deve recusar o checkout e cancelar a reserva sem emitir ingressos", async () => {
+    const createReservationResponse = await request(app)
+      .post("/reservations")
+      .set("Authorization", `Bearer ${customerToken}`)
+      .send({
+        eventId,
+        quantity: 1,
+      })
+      .expect(201);
+
+    reservationToDeclineId = createReservationResponse.body.data.id;
+
+    const checkoutResponse = await request(app)
+      .post(`/reservations/${reservationToDeclineId}/checkout`)
+      .set("Authorization", `Bearer ${customerToken}`)
+      .send({
+        decision: "DECLINE",
+      })
+      .expect(200);
+
+    expect(checkoutResponse.body).toHaveProperty("status", "success");
+    expect(checkoutResponse.body.data.reservation.status).toBe("CANCELLED");
+    expect(checkoutResponse.body.data.tickets).toHaveLength(0);
+
+    const ticketsFromDb = await prisma.ticket.findMany({
+      where: {
+        reservationId: reservationToDeclineId,
+      },
+    });
+
+    expect(ticketsFromDb).toHaveLength(0);
+  });
+
+  it("deve exibir os ingressos na area Meus Ingressos com link de compartilhamento", async () => {
+    const myTicketsResponse = await request(app)
+      .get("/tickets/me")
+      .set("Authorization", `Bearer ${customerToken}`)
+      .expect(200);
+
+    expect(myTicketsResponse.body).toHaveProperty("status", "success");
+    expect(Array.isArray(myTicketsResponse.body.data)).toBe(true);
+    expect(myTicketsResponse.body.data.length).toBeGreaterThan(0);
+
+    const firstTicket = myTicketsResponse.body.data[0] as {
+      id: string;
+      shareLink: string;
+    };
+
+    expect(firstTicket.id).toBeDefined();
+    expect(firstTicket.shareLink).toMatch(/^\/tickets\/shared\/.+\?token=/);
+  });
+
+  it("deve permitir compartilhamento via link e negar token invalido", async () => {
+    const myTicketsResponse = await request(app)
+      .get("/tickets/me")
+      .set("Authorization", `Bearer ${customerToken}`)
+      .expect(200);
+
+    const firstTicket = myTicketsResponse.body.data[0] as {
+      id: string;
+      shareLink: string;
+    };
+
+    const shareUrl = new URL(`http://localhost${firstTicket.shareLink}`);
+    const token = shareUrl.searchParams.get("token");
+    if (!token) {
+      throw new Error("Expected share token in generated link");
+    }
+
+    const sharedTicketResponse = await request(app)
+      .get(`/tickets/shared/${firstTicket.id}`)
+      .query({ token })
+      .expect(200);
+
+    expect(sharedTicketResponse.body).toHaveProperty("status", "success");
+    expect(sharedTicketResponse.body.data.id).toBe(firstTicket.id);
+
+    await request(app)
+      .get(`/tickets/shared/${firstTicket.id}`)
+      .query({ token: "invalid-token" })
+      .expect(403);
+  });
+
+  it("deve impedir checkout de reserva de outro cliente", async () => {
+    const createReservationResponse = await request(app)
+      .post("/reservations")
+      .set("Authorization", `Bearer ${customerToken}`)
+      .send({
+        eventId,
+        quantity: 1,
+      })
+      .expect(201);
+
+    const foreignReservationId = createReservationResponse.body.data
+      .id as string;
+
+    await request(app)
+      .post(`/reservations/${foreignReservationId}/checkout`)
+      .set("Authorization", `Bearer ${secondCustomerToken}`)
+      .send({
+        decision: "CONFIRM",
+      })
+      .expect(403);
   });
 });

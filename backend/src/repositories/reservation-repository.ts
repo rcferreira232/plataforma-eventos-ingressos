@@ -1,4 +1,8 @@
-import { type Reservation, type Prisma } from "@/generated/prisma/client";
+import {
+  type Reservation,
+  type Prisma,
+  type ReservationStatus,
+} from "@/generated/prisma/client";
 import { prisma } from "@/libs/prisma";
 
 type TransactionClient = Prisma.TransactionClient;
@@ -6,6 +10,12 @@ type TransactionClient = Prisma.TransactionClient;
 export interface IReservationRepository {
   create(
     data: Prisma.ReservationUncheckedCreateInput,
+    tx?: TransactionClient,
+  ): Promise<Reservation>;
+  getById(id: string, tx?: TransactionClient): Promise<Reservation | null>;
+  updateStatus(
+    id: string,
+    status: ReservationStatus,
     tx?: TransactionClient,
   ): Promise<Reservation>;
   getOccupiedQuantity(eventId: string, tx?: TransactionClient): Promise<number>;
@@ -22,6 +32,26 @@ export class PrismaReservationRepository implements IReservationRepository {
     tx: TransactionClient = prisma,
   ): Promise<Reservation> {
     return tx.reservation.create({ data });
+  }
+
+  getById(
+    id: string,
+    tx: TransactionClient = prisma,
+  ): Promise<Reservation | null> {
+    return tx.reservation.findUnique({
+      where: { id },
+    });
+  }
+
+  updateStatus(
+    id: string,
+    status: ReservationStatus,
+    tx: TransactionClient = prisma,
+  ): Promise<Reservation> {
+    return tx.reservation.update({
+      where: { id },
+      data: { status },
+    });
   }
 
   async getOccupiedQuantity(

@@ -20,9 +20,17 @@ export const createReservationSchema = z
         code: "custom",
         message: "Quantity must be 1 when reserving a specific seat",
         path: ["quantity"],
-        input: undefined,
+        input: data.quantity,
       });
     }
   });
 
 export type CreateReservationInput = z.infer<typeof createReservationSchema>;
+
+export const checkoutReservationSchema = z.object({
+  decision: z.enum(["CONFIRM", "DECLINE"]),
+});
+
+export type CheckoutReservationInput = z.infer<
+  typeof checkoutReservationSchema
+>;
