@@ -58,6 +58,8 @@ Tratamento de Erros: Utilizar classes de erro customizadas tratadas centralmente
 
 Segurança e Concorrência: Garantir controle de transações no Prisma para assegurar a consistência dos dados, como em processos de venda de ingressos ou reservas.
 
+Sempre atualize o context_atual.md com as mudanças.
+
 ## 5. Testes
 
 Obrigatório: Toda feature crítica deve possuir testes automatizados.
