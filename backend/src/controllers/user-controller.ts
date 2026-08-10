@@ -1,10 +1,27 @@
 import { type Request, type Response, type NextFunction } from "express";
 import { type UserService } from "@/services/user-service";
-import { type CreateUserInput, type UpdateUserInput } from "@/schemas/user-schemas";
+import { type CreateUserInput, type UpdateUserInput, type LoginUserInput } from "@/schemas/user-schemas";
 import { BadRequestError } from "@/libs/errors";
 
 export class UserController {
   constructor(private userService: UserService) {}
+
+  login = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
+    try {
+      const validatedData = req.body as LoginUserInput;
+      const result = await this.userService.login(validatedData);
+      res.status(200).json({
+        status: "success",
+        data: result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
 
   create = async (
     req: Request,

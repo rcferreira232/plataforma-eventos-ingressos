@@ -1,14 +1,45 @@
 import crypto from "crypto";
+import jwt from "jsonwebtoken";
 import { type User, type Prisma } from "@/generated/prisma/client";
 import { type IUserRepository } from "@/repositories/user-repository";
 import {
   type CreateUserInput,
   type UpdateUserInput,
+  type LoginUserInput,
 } from "@/schemas/user-schemas";
-import { ConflictError, NotFoundError } from "@/libs/errors";
+import { ConflictError, NotFoundError, UnauthorizedError } from "@/libs/errors";
+import { env } from "@/config/env";
 
 export class UserService {
   constructor(private userRepository: IUserRepository) {}
+
+  async login(data: LoginUserInput): Promise<{ token: string }> {
+    const user = await this.userRepository.getByEmail(data.email);
+    if (!user) {
+      throw new UnauthorizedError("Invalid email or password");
+    }
+
+    const [salt, hash] = user.password.split(":");
+    if (!salt || !hash) {
+      throw new UnauthorizedError("Invalid user password format");
+    }
+
+    const hashVerify = crypto
+      .pbkdf2Sync(data.password, salt, 1000, 64, "sha512")
+      .toString("hex");
+
+    if (hash !== hashVerify) {
+      throw new UnauthorizedError("Invalid email or password");
+    }
+
+    const token = jwt.sign(
+      { id: user.id, email: user.email, role: user.role },
+      env.jwtSecret,
+      { expiresIn: "1d" }
+    );
+
+    return { token };
+  }
 
   async createUser(data: CreateUserInput): Promise<Omit<User, "password">> {
     const existingUser = await this.userRepository.getByEmail(data.email);
