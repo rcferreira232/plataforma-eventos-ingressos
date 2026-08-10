@@ -134,7 +134,7 @@ O seed gera 3 users, armazene os emails nas variaveis de ambiente. Eu fiz um log
 
 ## 4 Body dos endpoints de event:
 
-- `POST /events` (ORGANIZER)
+- `POST /events` (ORGANIZER), set o `Authorization: Bearer ORGANIZER_TOKEN` no header
 - `GET /events`
 - `GET /events/:id`
 
@@ -169,8 +169,8 @@ O seed gera 3 users, armazene os emails nas variaveis de ambiente. Eu fiz um log
 
 ## 5 Body dos endpoints de reservation:
 
-- `POST /reservations` (CUSTOMER)
-- `POST /reservations/:id/checkout` (CUSTOMER)
+- `POST /reservations` (CUSTOMER), set o `Authorization: Bearer CUSTOMER_TOKEN` no header
+- `POST /reservations/:id/checkout` (CUSTOMER), set o `Authorization: Bearer CUSTOMER_TOKEN` no header
 
 1. Criar reserva: POST /reservations
 
@@ -206,9 +206,9 @@ O seed gera 3 users, armazene os emails nas variaveis de ambiente. Eu fiz um log
 
 ## 6 body dos endpoints de ticket:
 
-- `GET /tickets/me` (CUSTOMER)
+- `GET /tickets/me` (CUSTOMER), set o `Authorization: Bearer CUSTOMER_TOKEN` no header
 - `GET /tickets/shared/:id?token=...`
-- `POST /tickets/validate-entry` (GATEKEEPER)
+- `POST /tickets/validate-entry` (GATEKEEPER), set o `Authorization: Bearer GATEKEEPER_TOKEN` no header
 
 1. Listar meus ingressos: GET /tickets/me
 
