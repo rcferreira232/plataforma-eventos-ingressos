@@ -4,7 +4,6 @@ import crypto from "crypto";
 async function main() {
   console.log("Starting seed...");
 
-  // Helper to hash passwords securely matching the UserService implementation
   const hashPassword = (password: string) => {
     const salt = crypto.randomBytes(16).toString("hex");
     const hash = crypto
@@ -13,7 +12,6 @@ async function main() {
     return `${salt}:${hash}`;
   };
 
-  // 1. Create Organizer
   const organizer = await prisma.user.upsert({
     where: { email: "organizer@example.com" },
     update: {},
@@ -26,7 +24,6 @@ async function main() {
   });
   console.log(`Created Organizer: ${organizer.email}`);
 
-  // 2. Create 2 Customers
   const customer1 = await prisma.user.upsert({
     where: { email: "customer1@example.com" },
     update: {},
@@ -51,7 +48,6 @@ async function main() {
   });
   console.log(`Created Customer 2: ${customer2.email}`);
 
-  // 3. Create Gatekeeper
   const gatekeeper = await prisma.user.upsert({
     where: { email: "gatekeeper@example.com" },
     update: {},
@@ -64,8 +60,6 @@ async function main() {
   });
   console.log(`Created Gatekeeper: ${gatekeeper.email}`);
 
-  // 4. Create an Event with available tickets (linked to the organizer)
-  // Check if an event already exists to prevent duplicate seeds
   const existingEvent = await prisma.event.findFirst({
     where: { organizerId: organizer.id },
   });
