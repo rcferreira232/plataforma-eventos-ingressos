@@ -17,6 +17,7 @@ O frontend é construído utilizando o **Next.js**, aproveitando o modelo de rot
 
 ## 3. Estrutura de Pastas
 
+```text
 src/
 ├── app/ # App Router do Next.js (páginas e rotas)
 │ ├── (auth)/ # Rotas de login / autenticação
@@ -30,6 +31,7 @@ src/
 ├── hooks/ # Custom hooks (ex: autenticação, escaneamento de câmera)
 ├── types/ # Tipagens globais e DTOs compartilhados com a API
 └── utils/ # Funções utilitárias e formatadores (moeda, data, máscaras)
+```
 
 ## 4. Regras de Implementação e Boas Práticas
 
