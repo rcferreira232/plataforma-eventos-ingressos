@@ -2,7 +2,7 @@
 
 ## 1. Arquitetura
 
-O frontend é construído utilizando **Next.js (App Router)**, combinando Server Components para renderização de páginas estáticas/catálogo e Client Components para interatividade (formulários, mapa de assentos e leitor de QR Code).
+O frontend é construído utilizando **Next.js (App Router)**, combinando Server Components.
 
 - **Separação de Camadas:** Isolamento rigoroso entre UI Components, Custom Hooks para regras de estado/interface, TanStack React Query para chamadas e cache da API, e a camada de serviços HTTP (Axios/Fetch).
 - **Integração Backend:** Conexão direta com a API REST Express em `http://localhost:3333` (definida via `NEXT_PUBLIC_API_URL`).
@@ -16,7 +16,7 @@ O frontend é construído utilizando **Next.js (App Router)**, combinando Server
 - **Estilização:** Tailwind CSS
 - **Gerenciamento de Estado / Fetching:** TanStack React Query (v5)
 - **Formulários e Validação:** React Hook Form + Zod
-- **Leitura de QR Code:** `html5-qrcode` ou `react-qr-reader`
+- **Leitura de QR Code:** `react-qr-reader`
 - **Icons & Feedback Visual:** Lucide React + Sonner / React Hot Toast (mensagens amigáveis e feedback de erro)
 
 ---
@@ -52,6 +52,7 @@ src/
 ├── services/                   # Cliente Axios com Interceptors e endpoints da API
 │   ├── api.ts                  # Instância do Axios com cabeçalhos de JWT
 │   ├── auth.service.ts         # Login e registro
+│   ├── users.service.ts        # CRUD de usuários
 │   ├── events.service.ts       # Gestão e busca de eventos
 │   ├── reservations.service.ts # Reservas e checkout simulado
 │   └── tickets.service.ts      # "Meus ingressos", compartilhados e portaria
