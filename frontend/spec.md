@@ -17,7 +17,7 @@ O frontend é construído utilizando **Next.js (App Router)**, combinando Server
 - **Gerenciamento de Estado / Fetching:** TanStack React Query (v5)
 - **Formulários e Validação:** React Hook Form + Zod
 - **Leitura de QR Code:** `react-qr-reader`
-- **HeroUi:** Biblioteca de componentes UI (Buttons, Modals, Inputs, Badges, Toasts)
+- **Shadcn:** Biblioteca de componentes UI (Buttons, Modals, Inputs, Badges, Toasts)
 - **Icons & Feedback Visual:** Lucide React + Sonner / React Hot Toast (mensagens amigáveis e feedback de erro)
 
 ---
