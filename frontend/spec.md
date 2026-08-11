@@ -23,6 +23,7 @@ src/
 │ ├── organizer/ # Painel do Organizador (criação e gestão de eventos)
 │ ├── client/ # Navegação de eventos, catálogo e "Meus Ingressos"
 │ ├── gate/ # Tela de portaria (validação de QR Code por câmera ou manual)
+| ├── page.tsx # Página inicial (landing page pública)
 │ └── layout.tsx # Layout global
 ├── components/ # Componentes reutilizáveis de UI (botões, modais, cards)
 ├── services/ # Clientes HTTP configurados (Axios/Fetch) para comunicação com o backend
