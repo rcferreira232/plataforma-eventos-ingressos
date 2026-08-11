@@ -113,3 +113,25 @@ O resultado em si foi muito bom, tive que fazer alguns ajustes incrementais nos 
 - Testes e Documentação:
   - Escrita de testes de integração utilizando Jest + Supertest cobrindo cenários complexos de concorrência e autorização.
   - Elaboração da documentação do projeto, incluindo o `README.md` atualizado e o guia detalhado de testes manuais (`TESTES_MANUAIS_API.md`).
+
+## Dia 11/08/2026
+
+- Início do desenvolvimento do frontend.
+  - Criação da estrutura de pastas do frontend.
+  - Decisão de das libs a serem utilizadas.
+  - Styling com Tailwind CSS global.
+  - Provider de React Query.
+  - Auth Service.
+  - Use auth hook.
+  - Meta tags.
+  - Definição de rotas e páginas.
+  - Definição da biblioteca de UI a ser utilizada (Shadcn).
+  - Figma com protótipos clone do ingresso.com (Base do layout do site).
+  - Componentes básicos.
+    - Menu de navegação lateral.
+    - Topbar.
+    - Rodapé.
+
+Notas: O frontend ainda está em desenvolvimento, mas já consegui criar a estrutura de pastas, definir as libs que irei utilizar, criar o styling global com Tailwind CSS, definir as rotas e páginas, definir a biblioteca de UI (Shadcn) e criar alguns componentes básicos. Demorei muito para decidir a biblioteca de UI, tentei usar a HeroUI, mas não gostei muito do resultado principalmente por causa do layout escolhido de base, então resolvi usar a Shadcn. Instalei a lib ele adicionou libs a mais, alterou globals.css e adcionei o button padrão da lib. Daqui para frente irei criar os componentes: site-header, site-footer e nav-menu, e depois integrei eles com meu root layout. Teve outras coisas como types da api no arquivo `types/index.ts`, provider do react-query, api.ts para fazer as chamadas à API, auth.service para gerenciar a autenticação e use-auth hook, mas esse foram menos trabalhosos.
+
+Observação: Como a shadcn adicionou muitos estilos, usei IA para adaptar para minha paleta de cores, como já tinha muitos estilos definidos e fiz a base do site-header, site-footer e nav-menu, pedi para IA melhorar o site-header, site-footer e nav-menu para ficar mais parecido com o layout do ingresso.com, e depois pedi para IA melhorar o layout do site-header, site-footer e nav-menu para ficar mais parecido com o layout do ingresso.com.
