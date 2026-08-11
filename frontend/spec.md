@@ -11,7 +11,7 @@ O frontend é construído utilizando o **Next.js**, aproveitando o modelo de rot
 - **Framework:** Next.js (App Router)[cite: 1]
 - **Linguagem:** TypeScript
 - **Estilização:** Tailwind CSS
-- **Gerenciamento de Estado / Fetching:** TanStack React Query (para cache e sincronização de dados com a API) ou hooks nativos com Context API para autenticação.
+- **Gerenciamento de Estado / Fetching:** TanStack React Query (para cache e sincronização de dados com a API).
 - **Validação de Formulários:** Zod + React Hook Form
 - **Leitura de QR Code:** Bibliotecas compatíveis com WebRTC/câmera (ex: `html5-qrcode` ou `react-qr-reader`) para a tela de portaria.
 
@@ -19,6 +19,7 @@ O frontend é construído utilizando o **Next.js**, aproveitando o modelo de rot
 
 ```text
 src/
+├── middlewares/ # Middlewares para autenticação, interceptação de erros e logging
 ├── app/ # App Router do Next.js (páginas e rotas)
 │ ├── (auth)/ # Rotas de login / autenticação
 │ ├── organizer/ # Painel do Organizador (criação e gestão de eventos)
@@ -36,14 +37,27 @@ src/
 ## 4. Regras de Implementação e Boas Práticas
 
 - **Componentização:** Priorizar componentes funcionais pequenos e reutilizáveis. Separar lógica de negócio em _Custom Hooks_.
-- **Perfis de Acesso (Papéis):** Garantir o redirecionamento e proteção de rotas com base nos três papéis exigidos[cite: 1]:
-  1. _Organizador:_ Acesso à criação e gerenciamento de eventos[cite: 1].
-  2. _Cliente:_ Acesso à listagem, compra simulada e aba "Meus Ingressos" (com exibição do QR Code e link de compartilhamento)[cite: 1].
-  3. _Portaria:_ Acesso exclusivo à tela de validação de bilhetes via câmera ou código manual[cite: 1].
-- **UX no Fluxo de Compra:** Clareza no feedback de carregamento durante requisições de pagamento simulado (confirmação ou recusa)[cite: 1].
+- **Perfis de Acesso (Papéis):** Garantir o redirecionamento e proteção de rotas com base nos três papéis exigidos:
+  1. _Organizador:_ Acesso à criação e gerenciamento de eventos.
+  2. _Cliente:_ Acesso à listagem, compra simulada e aba "Meus Ingressos" (com exibição do QR Code e link de compartilhamento).
+  3. _Portaria:_ Acesso exclusivo à tela de validação de bilhetes via câmera ou código manual.
+- **UX no Fluxo de Compra:** Clareza no feedback de carregamento durante requisições de pagamento simulado (confirmação ou recusa).
 - **Tratamento de Erros:** Exibição de mensagens amigáveis ao usuário via Toasts/Modais em caso de falhas de rede ou regras de negócio negadas pela API.
+- **Responsividade:** Garantir que todas as telas sejam responsivas, especialmente a tela de portaria, que pode ser acessada via dispositivos móveis.
+- **Tipagem:** Respeitar tipos: Sem erros de tipagem, nem mesmo warnings.
+- **context_atual.md:** Manter documentação atualizada com as mudanças implementadas.
+- **Comentários:** O código deve ser autoexplicativo, evitando comentários desnecessários.
 
-## 5. Testes
+## 5. Páginas da aplicação
+
+- Rotas públicas: `/` (landing page), `/login`, `/register`
+- Rotas para usuários autenticados:
+  - **Organizador:** `/organizer/dashboard`, `/organizer/events`, `/organizer/events/[id]`
+  - **Cliente:** `/client/events`, `/client/events/[id]`, `/client/my-tickets`
+  - **Portaria:** `/gate/validate`
+  - **Todos usuários:** `/profile`, `/settings`
+
+## 6. Testes
 
 - **Testes de Componentes e Integração (Opcionais):** Utilizar Jest / Vitest junto com React Testing Library para validar componentes críticos de formulários, fluxo de reserva e renderização do QR Code.
 - **Testes E2E (Opcionais):** Utilizar Playwright ou Cypress para simular o fluxo de ponta a ponta (Cliente compra -> Organizador vê -> Portaria valida).
