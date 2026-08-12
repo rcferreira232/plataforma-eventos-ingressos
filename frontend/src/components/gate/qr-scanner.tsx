@@ -117,7 +117,7 @@ export function QrScanner({ onScanSuccess, disabled = false }: QrScannerProps) {
     <div className='space-y-4 text-center'>
       <div
         id={elementId}
-        className='w-full max-w-sm mx-auto overflow-hidden rounded-xl border border-border bg-slate-900 min-h-[260px] relative shadow-inner'
+        className='w-full max-w-sm mx-auto overflow-hidden rounded-xl border border-border bg-slate-900 min-h-65 relative shadow-inner'
       />
 
       {cameraError && (
