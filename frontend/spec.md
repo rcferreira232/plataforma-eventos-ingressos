@@ -194,16 +194,20 @@ export interface ValidationResponse {
 
 - **Padronização de Telas:** Não usar cores hardcoded do Tailwind, sempre usar as variáveis de cores disponíveis no arquivo global.css.
 
-- **globals.css:** Define o design system padrão da aplicação.
+- **globals.css:** Arquivo onde foi configurado o tailwind, com as cores, fontes, temas e variáveis globais de UI.
 
-- **shadcn:** utilize os componentes do shadcn, via `pnpm dlx shadcn@latest add "<nome do componente>"`. Adicionar sempre que necessário usar componentes de UI não disponiveis no projeto.
+- **Design System:** Toda o frontend deve seguir o design system padrão definido no arquivo global.css e nos componentes do diretório `/components/ui`.
+
+- **Design System - Page:** No `/app/design-system/page.tsx` temos um protótipo interativo completo com todos os componentes padronizados do Design System.
 
 - **Tipagem:** Sem erros de tipagem, nem mesmo warnings.
+
+- **Any:** Não usar tipo any no projeto.
 
 - **Evitar uso de comentarios:** O código deve ser autoexplicativo, evitando comentários desnecessários.
 
 - **context_atual.md:** Sempre atualize o context_atual.md com as mudanças.
 
-- **Componentização:** Priorizar componentes funcionais pequenos e reutilizáveis. Separar lógica de negócio em _Custom Hooks_.
+- **Componentização:** Priorizar componentes funcionais pequenos e reutilizáveis. Separar lógica de negócio em hooks.
 
 - **Responsividade:** Garantir que todas as telas sejam responsivas, especialmente a tela de portaria, que pode ser acessada via dispositivos móveis.
