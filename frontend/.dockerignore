@@ -1,0 +1,12 @@
+node_modules
+.next
+.vite
+dist
+build
+.git
+.gitignore
+Dockerfile*
+docker-compose*
+node_modules
+*.md
+dist
