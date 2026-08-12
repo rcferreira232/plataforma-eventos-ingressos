@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useCallback } from "react";
+import { useCallback, useSyncExternalStore } from "react";
 
 import { loginUser, registerUser } from "@/services/auth.service";
 import type { LoginPayload, RegisterPayload, User } from "@/types";
@@ -15,22 +15,40 @@ const ROLE_ROUTES: Record<string, string> = {
   GATEKEEPER: "/gate/validate",
 };
 
-function getStoredUser(): User | null {
-  if (typeof window === "undefined") {
-    return null;
+let cachedRawUser: string | null = null;
+let cachedParsedUser: User | null = null;
+
+function subscribeToAuthStorage(callback: () => void) {
+  if (typeof window === "undefined") return () => {};
+  window.addEventListener("storage", callback);
+  return () => window.removeEventListener("storage", callback);
+}
+
+function getStoredUserSnapshot(): User | null {
+  if (typeof window === "undefined") return null;
+  const rawUser = localStorage.getItem(USER_STORAGE_KEY);
+
+  if (rawUser === cachedRawUser) {
+    return cachedParsedUser;
   }
 
-  const rawUser = window.localStorage.getItem(USER_STORAGE_KEY);
-
+  cachedRawUser = rawUser;
   if (!rawUser) {
+    cachedParsedUser = null;
     return null;
   }
 
   try {
-    return JSON.parse(rawUser) as User;
+    cachedParsedUser = JSON.parse(rawUser) as User;
+    return cachedParsedUser;
   } catch {
+    cachedParsedUser = null;
     return null;
   }
+}
+
+function getServerUserSnapshot(): User | null {
+  return null;
 }
 
 function persistSession(token: string, user: User) {
@@ -40,6 +58,7 @@ function persistSession(token: string, user: User) {
 
   window.localStorage.setItem(TOKEN_STORAGE_KEY, token);
   window.localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(user));
+  window.dispatchEvent(new Event("storage"));
 }
 
 function decodeJwtPayload(token: string) {
@@ -58,32 +77,34 @@ function decodeJwtPayload(token: string) {
 
 export function useAuth() {
   const router = useRouter();
+  const user = useSyncExternalStore(
+    subscribeToAuthStorage,
+    getStoredUserSnapshot,
+    getServerUserSnapshot
+  );
 
   const login = useCallback(
     async (payload: LoginPayload) => {
       const response = await loginUser(payload);
-
       const tokenPayload = decodeJwtPayload(response.token);
-
       const role = tokenPayload?.role ?? "CUSTOMER";
 
-      const user = {
+      const authUser = {
         id: tokenPayload?.id ?? "",
         name: tokenPayload?.name ?? payload.email,
         email: payload.email,
         role,
       } as User;
 
-      persistSession(response.token, user);
-
-      router.push(ROLE_ROUTES[user.role] ?? "/");
+      persistSession(response.token, authUser);
+      router.push(ROLE_ROUTES[authUser.role] ?? "/");
     },
     [router],
   );
 
   const register = useCallback(
     async (payload: RegisterPayload) => {
-      const user = await registerUser(payload);
+      const registeredUser = await registerUser(payload);
 
       const response = await loginUser({
         email: payload.email,
@@ -91,12 +112,11 @@ export function useAuth() {
       });
 
       const authUser = {
-        ...user,
-        role: user.role ?? "CUSTOMER",
+        ...registeredUser,
+        role: registeredUser.role ?? "CUSTOMER",
       } as User;
 
       persistSession(response.token, authUser);
-
       router.push(ROLE_ROUTES[authUser.role] ?? "/");
     },
     [router],
@@ -109,14 +129,16 @@ export function useAuth() {
 
     window.localStorage.removeItem(TOKEN_STORAGE_KEY);
     window.localStorage.removeItem(USER_STORAGE_KEY);
+    window.dispatchEvent(new Event("storage"));
 
     router.push("/login");
   }, [router]);
 
   return {
+    user,
     login,
     register,
     logout,
-    getStoredUser,
+    getStoredUser: getStoredUserSnapshot,
   };
 }
