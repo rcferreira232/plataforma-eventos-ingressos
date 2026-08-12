@@ -192,6 +192,12 @@ export interface ValidationResponse {
 
 ## 7. Boas Práticas e Regras de Implementação
 
+- **Padronização de Telas:** Não usar cores hardcoded do Tailwind, sempre usar as variáveis de cores disponíveis no arquivo global.css.
+
+- **globals.css:** Define o design system padrão da aplicação.
+
+- **shadcn:** utilize os componentes do shadcn, via `pnpm dlx shadcn@latest add "<nome do componente>"`. Adicionar sempre que necessário usar componentes de UI não disponiveis no projeto.
+
 - **Tipagem:** Sem erros de tipagem, nem mesmo warnings.
 
 - **Evitar uso de comentarios:** O código deve ser autoexplicativo, evitando comentários desnecessários.
