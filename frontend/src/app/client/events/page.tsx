@@ -109,7 +109,8 @@ export default function ClientEventsPage() {
                     <Image
                       src={posterUrl}
                       alt={event.title}
-                      className='w-full h-full object-cover'
+                      fill
+                      className='object-cover'
                     />
                     {event.voteAverage && (
                       <div className='absolute top-2 right-2 bg-black/75 backdrop-blur-md px-2 py-0.5 rounded text-amber-400 text-xs font-bold flex items-center gap-1'>
