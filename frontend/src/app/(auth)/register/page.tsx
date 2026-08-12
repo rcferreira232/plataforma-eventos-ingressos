@@ -5,10 +5,16 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Ticket } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Ticket, Mail, Lock, User, UserPlus, AlertCircle } from "lucide-react";
+import { toast } from "sonner";
+
 import { useAuth } from "@/hooks/use-auth";
 import { getApiErrorMessage } from "@/services/api";
+
+import { Button } from "@/components/ui/button";
+import { FormInput } from "@/components/ui/form-input";
+import { FormSelect, SelectOption } from "@/components/ui/form-select";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
 const registerSchema = z.object({
   name: z.string().min(2, "Informe seu nome completo"),
@@ -17,14 +23,21 @@ const registerSchema = z.object({
   role: z.enum(["ORGANIZER", "CUSTOMER", "GATEKEEPER"]).optional(),
 });
 
+const roleOptions: SelectOption[] = [
+  { label: "Cliente (Comprar Ingressos)", value: "CUSTOMER" },
+  { label: "Organizador (Criar Eventos)", value: "ORGANIZER" },
+  { label: "Operador de Portaria (GATEKEEPER)", value: "GATEKEEPER" },
+];
+
 export default function RegisterPage() {
   const { register: registerUser } = useAuth();
   const [submitError, setSubmitError] = useState<string | null>(null);
+
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-  } = useForm({
+  } = useForm<z.infer<typeof registerSchema>>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
       role: "CUSTOMER",
@@ -40,147 +53,115 @@ export default function RegisterPage() {
         password: values.password,
         role: values.role ?? "CUSTOMER",
       });
+      toast.success("Conta criada com sucesso!", {
+        description: "Você foi cadastrado e autenticado na plataforma.",
+      });
     } catch (error) {
-      setSubmitError(await getApiErrorMessage(error));
+      const msg = getApiErrorMessage(error);
+      setSubmitError(msg);
+      toast.error("Erro ao criar conta", { description: msg });
     }
   };
 
   return (
-    <main className='flex min-h-screen items-center justify-center bg-background px-4 py-16 text-foreground'>
-      <div className='w-full max-w-md rounded-2xl border border-border bg-card p-8 shadow-2xl'>
-        {/* Header com a Marca no padrão do NavMenu e LoginPage */}
-        <div className='mb-8 flex flex-col items-start gap-4'>
-          <Link href='/' className='flex items-center gap-2'>
-            <span className='flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground'>
-              <Ticket className='h-4 w-4' aria-hidden='true' />
+    <main className="flex min-h-[calc(100vh-4rem)] items-center justify-center bg-background px-4 py-12 text-foreground">
+      <div className="w-full max-w-md rounded-2xl border border-border bg-card/90 backdrop-blur-xl p-8 shadow-2xl space-y-6">
+        {/* Marca & Cabeçalho */}
+        <div className="flex flex-col items-center text-center space-y-3">
+          <Link href="/" className="flex items-center gap-2 group">
+            <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-lg group-hover:scale-105 transition-transform">
+              <Ticket className="h-6 w-6" aria-hidden="true" />
             </span>
-            <span className='font-display text-base font-extrabold tracking-tight'>
-              Meu<span className='text-primary'>Ingresso</span>
+            <span className="font-display text-xl font-extrabold tracking-tight text-foreground">
+              Meu<span className="text-primary">Ingresso</span>
             </span>
           </Link>
 
           <div>
-            <h1 className='text-2xl font-bold tracking-tight text-card-foreground'>
-              Criar conta
+            <h1 className="text-2xl font-bold tracking-tight text-foreground">
+              Criar nova conta
             </h1>
-            <p className='mt-1 text-sm text-muted-foreground'>
-              Cadastre-se e comece a usar a plataforma com o perfil desejado.
+            <p className="mt-1 text-xs text-muted-foreground">
+              Cadastre-se e selecione o perfil desejado para acessar o sistema.
             </p>
           </div>
         </div>
 
+        {/* Exibição de Erro Geral */}
+        {submitError && (
+          <div className="p-3.5 rounded-xl border border-destructive/30 bg-destructive/10 text-xs text-destructive flex items-start gap-2">
+            <AlertCircle className="size-4 shrink-0 mt-0.5" />
+            <span>{submitError}</span>
+          </div>
+        )}
+
         {/* Formulário */}
-        <form className='space-y-4' onSubmit={handleSubmit(onSubmit)}>
-          <div>
-            <label
-              className='mb-1.5 block text-sm font-medium text-foreground'
-              htmlFor='name'
-            >
-              Nome
-            </label>
-            <input
-              id='name'
-              type='text'
-              autoComplete='name'
-              placeholder='Seu nome completo'
-              className='w-full rounded-xl border border-border bg-background px-4 py-2.5 text-sm text-foreground outline-none transition placeholder:text-muted-foreground/60 focus:border-ring focus:ring-1 focus:ring-ring'
-              {...register("name")}
-            />
-            {errors.name ? (
-              <p className='mt-1 text-xs text-destructive'>
-                {errors.name.message}
-              </p>
-            ) : null}
-          </div>
+        <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
+          <FormInput
+            label="Nome Completo"
+            type="text"
+            autoComplete="name"
+            placeholder="Seu nome completo"
+            leftIcon={<User className="size-4" />}
+            error={errors.name?.message}
+            {...register("name")}
+            required
+          />
 
-          <div>
-            <label
-              className='mb-1.5 block text-sm font-medium text-foreground'
-              htmlFor='email'
-            >
-              E-mail
-            </label>
-            <input
-              id='email'
-              type='email'
-              autoComplete='email'
-              placeholder='seu@email.com'
-              className='w-full rounded-xl border border-border bg-background px-4 py-2.5 text-sm text-foreground outline-none transition placeholder:text-muted-foreground/60 focus:border-ring focus:ring-1 focus:ring-ring'
-              {...register("email")}
-            />
-            {errors.email ? (
-              <p className='mt-1 text-xs text-destructive'>
-                {errors.email.message}
-              </p>
-            ) : null}
-          </div>
+          <FormInput
+            label="E-mail"
+            type="email"
+            autoComplete="email"
+            placeholder="seu@email.com"
+            leftIcon={<Mail className="size-4" />}
+            error={errors.email?.message}
+            {...register("email")}
+            required
+          />
 
-          <div>
-            <label
-              className='mb-1.5 block text-sm font-medium text-foreground'
-              htmlFor='password'
-            >
-              Senha
-            </label>
-            <input
-              id='password'
-              type='password'
-              autoComplete='new-password'
-              placeholder='••••••••'
-              className='w-full rounded-xl border border-border bg-background px-4 py-2.5 text-sm text-foreground outline-none transition placeholder:text-muted-foreground/60 focus:border-ring focus:ring-1 focus:ring-ring'
-              {...register("password")}
-            />
-            {errors.password ? (
-              <p className='mt-1 text-xs text-destructive'>
-                {errors.password.message}
-              </p>
-            ) : null}
-          </div>
+          <FormInput
+            label="Senha"
+            type="password"
+            autoComplete="new-password"
+            placeholder="••••••••"
+            leftIcon={<Lock className="size-4" />}
+            error={errors.password?.message}
+            {...register("password")}
+            required
+          />
 
-          <div>
-            <label
-              className='mb-1.5 block text-sm font-medium text-foreground'
-              htmlFor='role'
-            >
-              Perfil
-            </label>
-            <select
-              id='role'
-              className='w-full rounded-xl border border-border bg-background px-4 py-2.5 text-sm text-foreground outline-none transition focus:border-ring focus:ring-1 focus:ring-ring'
-              {...register("role")}
-            >
-              <option value='CUSTOMER' className='bg-card text-foreground'>
-                Cliente
-              </option>
-              <option value='ORGANIZER' className='bg-card text-foreground'>
-                Organizador
-              </option>
-              <option value='GATEKEEPER' className='bg-card text-foreground'>
-                Portaria
-              </option>
-            </select>
-          </div>
-
-          {submitError ? (
-            <p className='rounded-lg border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive'>
-              {submitError}
-            </p>
-          ) : null}
+          <FormSelect
+            label="Perfil de Acesso"
+            options={roleOptions}
+            error={errors.role?.message}
+            {...register("role")}
+            required
+          />
 
           <Button
-            type='submit'
+            type="submit"
             disabled={isSubmitting}
-            className='w-full font-semibold'
+            className="w-full font-bold h-11 gap-2 mt-2"
           >
-            {isSubmitting ? "Cadastrando..." : "Criar conta"}
+            {isSubmitting ? (
+              <>
+                <LoadingSpinner size="sm" />
+                Cadastrando...
+              </>
+            ) : (
+              <>
+                <UserPlus className="size-4" />
+                Criar Conta
+              </>
+            )}
           </Button>
         </form>
 
-        <p className='mt-6 text-center text-sm text-muted-foreground'>
-          Já tem conta?{" "}
+        <p className="text-center text-xs text-muted-foreground border-t border-border pt-4">
+          Já possui uma conta?{" "}
           <Link
-            href='/login'
-            className='font-medium text-primary transition hover:underline'
+            href="/login"
+            className="font-semibold text-primary transition hover:underline"
           >
             Fazer login
           </Link>
