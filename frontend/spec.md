@@ -211,3 +211,33 @@ export interface ValidationResponse {
 - **Componentização:** Priorizar componentes funcionais pequenos e reutilizáveis. Separar lógica de negócio em hooks.
 
 - **Responsividade:** Garantir que todas as telas sejam responsivas, especialmente a tela de portaria, que pode ser acessada via dispositivos móveis.
+
+## 8. Design System - Componentes:
+
+```tsx
+import { Container } from "@/components/ui/container";
+import { Section } from "@/components/ui/section";
+import { PageHeader } from "@/components/ui/page-header";
+import { Heading } from "@/components/ui/heading";
+import { Text } from "@/components/ui/text";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import { Toast } from "@/components/ui/toast";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+  CardFooter,
+} from "@/components/ui/card";
+import { FormInput } from "@/components/ui/form-input";
+import { FormSelect, SelectOption } from "@/components/ui/form-select";
+import { FormTextarea } from "@/components/ui/form-textarea";
+import { FormErrorMessage } from "@/components/ui/form-error-message";
+import { Modal } from "@/components/ui/modal";
+import { Drawer } from "@/components/ui/drawer";
+import { DataTable, ColumnDef } from "@/components/ui/data-table";
+```
