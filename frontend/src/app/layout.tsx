@@ -35,11 +35,11 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang='pt-BR'
       className={`${inter.variable} ${poppins.variable} h-full antialiased`}
     >
-      <SiteHeader />
       <body className='min-h-full bg-slate-950 text-slate-100'>
+        <SiteHeader />
         <QueryProvider>{children}</QueryProvider>
+        <SiteFooter />
       </body>
-      <SiteFooter />
     </html>
   );
 }
