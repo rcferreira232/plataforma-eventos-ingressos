@@ -40,6 +40,12 @@ model Event {
   price       Float
   externalRef String?
   
+  externalId   String?
+  overview     String?
+  posterPath   String?
+  backdropPath String?
+  voteAverage  Float?
+  
   organizerId String
   organizer   User     @relation(fields: [organizerId], references: [id])
   

@@ -9,6 +9,11 @@ export const createEventSchema = z.object({
   capacity: z.number().int().positive("Capacity must be a positive integer"),
   price: z.number().nonnegative("Price must be a non-negative number"),
   externalRef: z.string().optional(),
+  externalId: z.string().optional().nullable(),
+  overview: z.string().optional().nullable(),
+  posterPath: z.string().optional().nullable(),
+  backdropPath: z.string().optional().nullable(),
+  voteAverage: z.number().optional().nullable(),
 });
 
 export type CreateEventInput = z.infer<typeof createEventSchema>;
