@@ -142,6 +142,46 @@ function EventDetailsContent({ id }: EventDetailsContentProps) {
         }
       />
 
+      {/* Hero / Banner do Evento (se houver backdrop ou poster) */}
+      {event.backdropPath || event.posterPath ? (
+        <div className="relative rounded-2xl overflow-hidden border border-border bg-card shadow-lg">
+          {event.backdropPath ? (
+            <div className="relative h-64 sm:h-80 w-full overflow-hidden">
+              <img
+                src={`https://image.tmdb.org/t/p/w1280${event.backdropPath}`}
+                alt={event.title}
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent" />
+            </div>
+          ) : null}
+
+          <div className={`p-6 flex flex-col sm:flex-row gap-6 items-start ${event.backdropPath ? "-mt-24 relative z-10" : ""}`}>
+            {event.posterPath && (
+              <img
+                src={`https://image.tmdb.org/t/p/w500${event.posterPath}`}
+                alt={event.title}
+                className="w-36 h-52 object-cover rounded-xl shadow-2xl border-2 border-border shrink-0"
+              />
+            )}
+            <div className="space-y-3 flex-1">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <h1 className="text-3xl font-black text-foreground">{event.title}</h1>
+                {event.voteAverage && (
+                  <Badge variant="secondary" className="gap-1 bg-black/60 backdrop-blur-md text-amber-400 font-bold border-amber-400/30 px-3 py-1">
+                    <Sparkles className="size-3.5 fill-amber-400 text-amber-400" />
+                    TMDB {event.voteAverage.toFixed(1)} / 10
+                  </Badge>
+                )}
+              </div>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                {event.overview || "Sem sinopse detalhada fornecida."}
+              </p>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
       {/* Card de Detalhes do Evento */}
       <Card>
         <CardHeader>
@@ -157,7 +197,7 @@ function EventDetailsContent({ id }: EventDetailsContentProps) {
             {event.externalRef && (
               <Badge variant="secondary" className="gap-1 px-3 py-1">
                 <Film className="size-3.5" />
-                TMDB Reference: {event.externalRef}
+                TMDB Ref: {event.externalRef}
               </Badge>
             )}
           </div>
