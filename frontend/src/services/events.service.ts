@@ -8,11 +8,23 @@ export interface CreateEventPayload {
   capacity: number;
   price: number;
   externalRef?: string;
+  externalId?: string;
+  overview?: string;
+  posterPath?: string;
+  backdropPath?: string;
+  voteAverage?: number;
 }
 
 interface ApiResponse<T> {
   status: string;
   data: T;
+}
+
+export async function getPopularMovies(page = 1) {
+  const response = await api.get<import("@/types").TMDBMovie[]>(
+    `/tmdb/popular?page=${page}`,
+  );
+  return response.data;
 }
 
 export async function createEvent(payload: CreateEventPayload): Promise<Event> {

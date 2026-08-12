@@ -24,6 +24,16 @@ export interface RegisterPayload {
   role?: Role;
 }
 
+export interface TMDBMovie {
+  id: number;
+  title: string;
+  overview: string;
+  posterPath: string | null;
+  backdropPath: string | null;
+  releaseDate: string;
+  voteAverage: number;
+}
+
 export interface Event {
   id: string;
   title: string;
@@ -32,6 +42,11 @@ export interface Event {
   capacity: number;
   price: number;
   externalRef?: string;
+  externalId?: string | null;
+  overview?: string | null;
+  posterPath?: string | null;
+  backdropPath?: string | null;
+  voteAverage?: number | null;
   organizerId: string;
   organizer?: User;
 }
