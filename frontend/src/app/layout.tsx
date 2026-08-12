@@ -4,6 +4,7 @@ import "./globals.css";
 import { QueryProvider } from "@/providers/query-provider";
 import { SiteHeader } from "@/components/layout/site-header";
 import { SiteFooter } from "@/components/layout/site-footer";
+import { Toaster } from "sonner";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -29,16 +30,23 @@ export const viewport: Viewport = {
   themeColor: "#12152b",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <html
-      lang='pt-BR'
+      lang="pt-BR"
+      data-scroll-behavior="smooth"
+      suppressHydrationWarning
       className={`${inter.variable} ${poppins.variable} h-full antialiased`}
     >
-      <body className='min-h-full bg-slate-950 text-slate-100'>
+      <body className="min-h-full bg-slate-950 text-slate-100 flex flex-col">
         <SiteHeader />
         <QueryProvider>{children}</QueryProvider>
         <SiteFooter />
+        <Toaster position="top-right" richColors />
       </body>
     </html>
   );
