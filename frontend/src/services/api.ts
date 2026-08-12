@@ -1,5 +1,4 @@
 import axios from "axios";
-import { useRouter } from "next/router";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -12,7 +11,8 @@ export const api = axios.create({
 
 api.interceptors.request.use((config) => {
   if (typeof window !== "undefined") {
-    const token = window.localStorage.getItem("meu-ingresso-token");
+    const token = localStorage.getItem("meu-ingresso-token");
+
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -24,19 +24,16 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
-      if (typeof window !== "undefined") {
-        window.localStorage.removeItem("meu-ingresso-token");
-        window.localStorage.removeItem("meu-ingresso-user");
-        useRouter().push("/login");
-      }
+    if (error.response?.status === 401 && typeof window !== "undefined") {
+      localStorage.removeItem("meu-ingresso-token");
+      localStorage.removeItem("meu-ingresso-user");
     }
 
     return Promise.reject(error);
   },
 );
 
-export async function getApiErrorMessage(error: unknown): Promise<string> {
+export function getApiErrorMessage(error: unknown): string {
   if (axios.isAxiosError(error)) {
     return error.response?.data?.message ?? error.message;
   }
