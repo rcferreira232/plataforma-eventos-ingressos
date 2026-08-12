@@ -13,6 +13,35 @@ interface NavMenuProps {
 }
 
 export function NavMenu({ open, onClose }: NavMenuProps) {
+  const pathname = usePathname();
+  const { user, logout } = useAuth();
+
+  const getRoleBadgeVariant = (role?: string) => {
+    switch (role) {
+      case "ORGANIZER":
+        return "default";
+      case "GATEKEEPER":
+        return "warning";
+      case "CUSTOMER":
+        return "success";
+      default:
+        return "secondary";
+    }
+  };
+
+  const getRoleLabel = (role?: string) => {
+    switch (role) {
+      case "ORGANIZER":
+        return "Organizador";
+      case "GATEKEEPER":
+        return "Portaria";
+      case "CUSTOMER":
+        return "Cliente";
+      default:
+        return "Visitante";
+    }
+  };
+
   return (
     <>
       <div
