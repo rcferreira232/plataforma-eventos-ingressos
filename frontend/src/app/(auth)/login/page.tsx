@@ -5,6 +5,8 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { Ticket } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
 import { getApiErrorMessage } from "@/services/api";
 
@@ -34,24 +36,35 @@ export default function LoginPage() {
   };
 
   return (
-    <main className='flex min-h-screen items-center justify-center bg-slate-950 px-4 py-16'>
-      <div className='w-full max-w-md rounded-2xl border border-slate-800 bg-slate-900/90 p-8 shadow-2xl shadow-slate-950/40'>
-        <div className='mb-8'>
-          <p className='text-sm font-semibold uppercase tracking-[0.3em] text-sky-400'>
-            MeuIngresso
-          </p>
-          <h1 className='mt-2 text-3xl font-semibold text-white'>
-            Entrar na plataforma
-          </h1>
-          <p className='mt-2 text-sm text-slate-400'>
-            Acesse sua conta para gerenciar eventos ou comprar ingressos.
-          </p>
+    <main className='flex min-h-screen items-center justify-center bg-background px-4 py-16 text-foreground'>
+      {/* Usando bg-card e border para bater exatamente com --card e --border */}
+      <div className='w-full max-w-md rounded-2xl border border-border bg-card p-8 shadow-2xl'>
+        {/* Header com a Marca no padrão do NavMenu */}
+        <div className='mb-8 flex flex-col items-start gap-4'>
+          <Link href='/' className='flex items-center gap-2'>
+            <span className='flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground'>
+              <Ticket className='h-4 w-4' aria-hidden='true' />
+            </span>
+            <span className='font-display text-base font-extrabold tracking-tight'>
+              Meu<span className='text-primary'>Ingresso</span>
+            </span>
+          </Link>
+
+          <div>
+            <h1 className='text-2xl font-bold tracking-tight text-card-foreground'>
+              Entrar na plataforma
+            </h1>
+            <p className='mt-1 text-sm text-muted-foreground'>
+              Acesse sua conta para gerenciar eventos ou comprar ingressos.
+            </p>
+          </div>
         </div>
 
+        {/* Formulário */}
         <form className='space-y-4' onSubmit={handleSubmit(onSubmit)}>
           <div>
             <label
-              className='mb-2 block text-sm font-medium text-slate-200'
+              className='mb-1.5 block text-sm font-medium text-foreground'
               htmlFor='email'
             >
               E-mail
@@ -60,11 +73,12 @@ export default function LoginPage() {
               id='email'
               type='email'
               autoComplete='email'
-              className='w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-white outline-none ring-0 transition focus:border-sky-500'
+              placeholder='seu@email.com'
+              className='w-full rounded-xl border border-border bg-background px-4 py-2.5 text-sm text-foreground outline-none transition placeholder:text-muted-foreground/60 focus:border-ring focus:ring-1 focus:ring-ring'
               {...register("email")}
             />
             {errors.email ? (
-              <p className='mt-1 text-sm text-rose-400'>
+              <p className='mt-1 text-xs text-destructive'>
                 {errors.email.message}
               </p>
             ) : null}
@@ -72,7 +86,7 @@ export default function LoginPage() {
 
           <div>
             <label
-              className='mb-2 block text-sm font-medium text-slate-200'
+              className='mb-1.5 block text-sm font-medium text-foreground'
               htmlFor='password'
             >
               Senha
@@ -81,36 +95,37 @@ export default function LoginPage() {
               id='password'
               type='password'
               autoComplete='current-password'
-              className='w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-white outline-none ring-0 transition focus:border-sky-500'
+              placeholder='••••••••'
+              className='w-full rounded-xl border border-border bg-background px-4 py-2.5 text-sm text-foreground outline-none transition placeholder:text-muted-foreground/60 focus:border-ring focus:ring-1 focus:ring-ring'
               {...register("password")}
             />
             {errors.password ? (
-              <p className='mt-1 text-sm text-rose-400'>
+              <p className='mt-1 text-xs text-destructive'>
                 {errors.password.message}
               </p>
             ) : null}
           </div>
 
           {submitError ? (
-            <p className='rounded-lg border border-rose-500/40 bg-rose-500/10 p-3 text-sm text-rose-300'>
+            <p className='rounded-lg border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive'>
               {submitError}
             </p>
           ) : null}
 
-          <button
+          <Button
             type='submit'
             disabled={isSubmitting}
-            className='w-full rounded-xl bg-sky-500 px-4 py-3 font-semibold text-white transition hover:bg-sky-400 disabled:cursor-not-allowed disabled:opacity-70'
+            className='w-full font-semibold'
           >
             {isSubmitting ? "Entrando..." : "Entrar"}
-          </button>
+          </Button>
         </form>
 
-        <p className='mt-6 text-center text-sm text-slate-400'>
+        <p className='mt-6 text-center text-sm text-muted-foreground'>
           Ainda não tem conta?{" "}
           <Link
             href='/register'
-            className='font-semibold text-sky-400 transition hover:text-sky-300'
+            className='font-medium text-primary transition hover:underline'
           >
             Criar conta
           </Link>
