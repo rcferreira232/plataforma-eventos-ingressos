@@ -29,6 +29,11 @@ export class EventService {
       capacity: data.capacity,
       price: data.price,
       externalRef: data.externalRef ?? null,
+      externalId: data.externalId ?? null,
+      overview: data.overview ?? null,
+      posterPath: data.posterPath ?? null,
+      backdropPath: data.backdropPath ?? null,
+      voteAverage: data.voteAverage ?? null,
       organizerId,
     });
   }

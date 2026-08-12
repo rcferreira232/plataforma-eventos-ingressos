@@ -4,6 +4,7 @@ type Env = {
   jwtSecret: string;
   tmdbApiKey: string;
   allowOrigin: string;
+  tmdbBaseUrl: string;
 };
 
 export const env: Env = {
@@ -12,4 +13,5 @@ export const env: Env = {
   jwtSecret: process.env.JWT_SECRET || "",
   tmdbApiKey: process.env.TMDB_API_KEY || "",
   allowOrigin: process.env.ALLOW_ORIGIN || "",
+  tmdbBaseUrl: process.env.TMDB_BASE_URL || "",
 };
