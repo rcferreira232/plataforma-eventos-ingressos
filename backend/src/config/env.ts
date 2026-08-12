@@ -3,6 +3,7 @@ type Env = {
   port: number;
   jwtSecret: string;
   tmdbApiKey: string;
+  allowOrigin: string;
 };
 
 export const env: Env = {
@@ -10,4 +11,5 @@ export const env: Env = {
   postgresUrl: process.env.DATABASE_URL || "",
   jwtSecret: process.env.JWT_SECRET || "",
   tmdbApiKey: process.env.TMDB_API_KEY || "",
+  allowOrigin: process.env.ALLOW_ORIGIN || "",
 };

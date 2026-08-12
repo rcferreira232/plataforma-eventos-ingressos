@@ -6,11 +6,16 @@ import { eventRouter } from "./routes/event-routes.ts";
 import { reservationRouter } from "./routes/reservation-routes.ts";
 import { ticketRouter } from "./routes/ticket-routes.ts";
 import { errorHandler } from "./middlewares/error-middleware.ts";
+import { env } from "./config/env.ts";
 
 export const app: Express = express();
 
+const corsOptions = {
+  origin: env.allowOrigin,
+};
+
 app.use(express.urlencoded({ extended: true }));
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(morgan("dev"));
 
