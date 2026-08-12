@@ -37,16 +37,18 @@ export default function RootLayout({
 }) {
   return (
     <html
-      lang="pt-BR"
-      data-scroll-behavior="smooth"
+      lang='pt-BR'
+      data-scroll-behavior='smooth'
       suppressHydrationWarning
       className={`${inter.variable} ${poppins.variable} h-full antialiased`}
     >
-      <body className="min-h-full bg-slate-950 text-slate-100 flex flex-col">
+      <body className='min-h-full bg-slate-950 text-slate-100 flex flex-col'>
         <SiteHeader />
-        <QueryProvider>{children}</QueryProvider>
+        <QueryProvider>
+          <div className='flex-1'>{children}</div>
+        </QueryProvider>
         <SiteFooter />
-        <Toaster position="top-right" richColors />
+        <Toaster position='top-right' richColors />
       </body>
     </html>
   );
