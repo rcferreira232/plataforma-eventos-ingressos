@@ -1,8 +1,8 @@
-# Plataforma de Eventos e Ingressos
+# Plataforma de Eventos e Ingressos (MeuIngresso)
 
 ## Sobre o Projeto
 
-Esta aplicação consiste em uma Plataforma de Eventos e Ingressos desenvolvida para gerenciar o ciclo completo de publicação de eventos, comercialização e validação de acessos. O sistema conecta organizadores, clientes e operadores de portaria em um ambiente integrado, simulando o fluxo real de grandes plataformas de entretenimento.
+Esta aplicação consiste em uma Plataforma de Eventos e Ingressos desenvolvida para gerenciar o ciclo completo de publicação de eventos, comercialização e validação de acessos. O sistema conecta organizadores, clientes e operadores de portaria em um ambiente integrado.
 
 ## Principais Funcionalidades
 
@@ -24,197 +24,199 @@ Esta aplicação consiste em uma Plataforma de Eventos e Ingressos desenvolvida 
 
 - Portaria: Valida o acesso do público na entrada dos eventos.
 
-# Backend - Plataforma de Eventos e Ingressos
+## Pré-requisitos
 
-API REST em Node.js + TypeScript com Express, Prisma e PostgreSQL.
+Para rodar o projeto do zero, você precisará de:
 
-## Visao Geral
+- **Node.js**: `v22.x` ou superior
+- **Gerenciador de Pacotes**: `pnpm` (recomendado v10) ou `npm`
+- **Docker & Docker Compose**: instalados e ativos na sua máquina
+- **Git**: para clonar o repositório
 
-Este backend implementa:
+## Opção 1: Executando TUDO com Docker Compose
 
-- Autenticacao com JWT e RBAC (`ORGANIZER`, `CUSTOMER`, `GATEKEEPER`)
-- Catalogo de eventos
-- Reserva de ingressos com protecao contra concorrencia
-- Checkout simulado com confirmacao/recusa de pagamento
-- Emissao de ingressos com codigo seguro (UUID v4)
-- Compartilhamento de ingresso por link assinado (HMAC)
-- Validacao de ingresso na portaria com marcacao atomica de uso
+Esta opção constrói os contêineres do PostgreSQL, Backend e Frontend de forma orquestrada.
 
-## Arquitetura
-
-Estrutura por camadas (MVC + Services + Repositories):
-
-- `routes` -> `middlewares` -> `controllers` -> `services` -> `repositories` -> `Prisma`
-
-## Requisitos
-
-- Node.js 20+
-- pnpm 10+
-- Docker + Docker Compose
-
-## Configuracao de Ambiente
-
-1. Entre na pasta do backend:
+### 1. Clonar o repositório
 
 ```bash
-cd backend
+git clone <URL_DO_REPOSITORIO>
+cd plataforma-eventos-ingressos
 ```
 
-2. Crie o arquivo `.env` com os valores abaixo:
+### 2. Configurar Variáveis de Ambiente Globais
 
-```env
-APP_PORT=3000
-JWT_SECRET=sua_chave_secreta_forte
-TMDB_API_KEY=sua_chave_tmdb_opcional
-
-POSTGRES_USER=postgres
-POSTGRES_PASSWORD=postgres
-POSTGRES_DB=plataforma-ingressos
-DB_PORT=4444
-
-DATABASE_URL=postgresql://postgres:postgres@localhost:4444/plataforma-ingressos
-```
-
-Observacoes:
-
-- `TMDB_API_KEY` e opcional para as rotas que nao dependem de `externalRef`.
-- O `DATABASE_URL` precisa combinar com os dados do `docker-compose.yml`.
-
-## Subir Banco de Dados
+Copie o arquivo `.env.example` da raiz para `.env`:
 
 ```bash
-docker compose up -d
+cp .env.example .env
 ```
 
-Para parar:
+_(Opcional)_ Se possuir uma API Key do TMDB, defina `TMDB_API_KEY=sua_chave` no arquivo `.env`. Caso contrário, pode afetar a funcionalidade de alguns recursos.
+
+### 3. Subir todos os serviços
+
+```bash
+docker compose up --build -d
+```
+
+### 4. Executar Migrações e Seed do Banco
+
+Com os contêineres rodando, execute o seed no container do backend:
+
+```bash
+docker compose exec backend pnpm db:push
+docker compose exec backend pnpm prisma db seed
+```
+
+### Acessar as Aplicações:
+
+- **Frontend**: [http://localhost:3000](http://localhost:3000)
+- **Backend API**: [http://localhost:3333](http://localhost:3333)
+
+Para parar os contêineres:
 
 ```bash
 docker compose down
 ```
 
-Para remover volume e resetar dados:
+## Opção 2: Executando Localmente do Zero (Backend e Frontend Separados)
+
+Se você deseja executar o Backend e Frontend individualmente em suas próprias janelas de terminal (para desenvolvimento ou debug), siga este passo a passo:
+
+### Passo 1: Subindo o Banco PostgreSQL
+
+Você pode utilizar o container Docker de PostgreSQL configurado na raiz:
 
 ```bash
-docker compose down -v
+# Na raiz do projeto:
+docker compose up -d postgres
 ```
 
-## Instalar Dependencias
+> O banco ficará acessível localmente na porta `4444` (ou na porta definida em seu `.env`).
+
+---
+
+### Passo 2: Configurando e Rodando o Backend
+
+1. **Acesse a pasta do backend:**
+
+   ```bash
+   cd backend
+   ```
+
+2. **Crie o arquivo de ambiente `.env`:**
+   Copie a partir de `.env.example`:
+
+   ```bash
+   cp .env.example .env
+   ```
+
+   _Conteúdo de exemplo do `backend/.env`:_
+
+   ```env
+   APP_PORT=3333
+   POSTGRES_USER=plataforma-ingressos
+   POSTGRES_PASSWORD=plataforma-ingressos
+   POSTGRES_DB=plataforma-ingressos
+   DB_PORT=4444
+   DATABASE_URL="postgresql://plataforma-ingressos:plataforma-ingressos@localhost:4444/plataforma-ingressos?schema=public"
+   JWT_SECRET="seu_jwt_secret_super_seguro"
+   TMDB_API_KEY="sua_chave"
+   ALLOW_ORIGIN="http://localhost:3000"
+   ```
+
+3. **Instale as dependências:**
+
+   ```bash
+   pnpm install
+   ```
+
+4. **Prepare o Banco de Dados (Prisma):**
+
+   ```bash
+   # Gera o Prisma Client
+   pnpm db:generate
+
+   # Sincroniza as tabelas com o PostgreSQL
+   pnpm db:push
+
+   # Popula o banco com os usuários e eventos de teste
+   pnpm prisma db seed
+   ```
+
+5. **Inicie o servidor backend em desenvolvimento:**
+   ```bash
+   pnpm dev
+   ```
+   > Backend rodando em: `http://localhost:3333`
+
+---
+
+### Passo 3: Configurando e Rodando o Frontend
+
+1. **Abra uma nova janela de terminal e acesse a pasta do frontend:**
+
+   ```bash
+   cd frontend
+   ```
+
+2. **Crie o arquivo de ambiente `.env`:**
+
+   ```bash
+   cp .env.example .env
+   ```
+
+   _Conteúdo do `frontend/.env`:_
+
+   ```env
+   NEXT_PUBLIC_API_URL=http://localhost:3333
+   ```
+
+3. **Instale as dependências:**
+
+   ```bash
+   pnpm install
+   ```
+
+4. **Inicie o servidor frontend em desenvolvimento:**
+   ```bash
+   pnpm dev
+   ```
+   > Frontend rodando em: `http://localhost:3000`
+
+---
+
+## Usuários e Credenciais do Seed
+
+Após rodar o comando `pnpm prisma db seed`, os seguintes usuários padrão estarão prontos para uso em ambos os ambientes (senha para todos: `password123`):
+
+| Papel (`Role`) | E-mail                   | Senha         | Função no Sistema                                                         |
+| :------------- | :----------------------- | :------------ | :------------------------------------------------------------------------ |
+| **ORGANIZER**  | `organizer@example.com`  | `password123` | Cria novos eventos e consulta catálogo TMDB.                              |
+| **CUSTOMER**   | `customer@example.com`   | `password123` | Navega por eventos, reserva assentos, faz checkout e visualiza ingressos. |
+| **CUSTOMER**   | `customer2@example.com`  | `password123` | Segundo cliente para testes de concorrência e compra simultânea.          |
+| **GATEKEEPER** | `gatekeeper@example.com` | `password123` | Opera a tela de validação por leitor de QR Code na portaria.              |
+
+---
+
+## Testes do Backend
+
+Para executar os testes (no diretório `backend`):
 
 ```bash
-pnpm install
-```
+# Executa todos os testes de integração
+pnpm test
 
-## Preparar Banco com Prisma
-
-Gerar client:
-
-```bash
-pnpm db:generate
-```
-
-Sincronizar schema no banco:
-
-```bash
-pnpm db:push
-```
-
-Popular dados iniciais:
-
-```bash
-pnpm prisma db seed
-```
-
-Opcional (inspecao visual):
-
-```bash
-pnpm db:studio
-```
-
-## Rodar Aplicacao
-
-Modo desenvolvimento:
-
-```bash
-pnpm dev
-```
-
-A API sobe em:
-
-- `http://localhost:3000` (ou a porta definida em `APP_PORT`)
-
-Build + start:
-
-```bash
-pnpm build
-pnpm start
-```
-
-## Rodar Testes
-
-Typecheck:
-
-```bash
+# Validação de tipagem TypeScript
 pnpm typecheck
 ```
 
-Suite completa:
+---
 
-```bash
-pnpm test
-```
+## Documentações Adicionais
 
-Teste especifico de portaria:
-
-```bash
-pnpm test -- src/tests/gatekeeper-validation.test.ts
-```
-
-## Usuarios Seed
-
-Depois do seed, os usuarios abaixo estao disponiveis:
-
-- Organizer: `organizer@example.com` / `password123`
-- Customer 1: `customer1@example.com` / `password123`
-- Customer 2: `customer2@example.com` / `password123`
-- Gatekeeper: `gatekeeper@example.com` / `password123`
-
-## Endpoints Principais
-
-### Usuarios
-
-- `POST /users/login`
-- `POST /users`
-- `GET /users`
-- `GET /users/:id`
-- `PUT /users/:id`
-- `DELETE /users/:id`
-
-### Eventos
-
-- `POST /events` (ORGANIZER)
-- `GET /events`
-- `GET /events/:id`
-
-### Reservas e Checkout
-
-- `POST /reservations` (CUSTOMER)
-- `POST /reservations/:id/checkout` (CUSTOMER)
-
-### Ingressos
-
-- `GET /tickets/me` (CUSTOMER)
-- `GET /tickets/shared/:id?token=...`
-- `POST /tickets/validate-entry` (GATEKEEPER)
-
-## Garantias de Consistencia
-
-- Reserva e checkout com `Prisma.TransactionIsolationLevel.Serializable`
-- Lock com `FOR UPDATE` para evitar corrida de concorrencia
-- Constraint composta no banco para assento unico por evento: `@@unique([eventId, seatCode])`
-- Validacao de portaria marca ingresso como `USED` na mesma transacao que valida
-
-## Guia de Teste Manual da API
-
-Consulte:
-
-- `TESTES_MANUAIS_API.md`
+- **[Documentação e Contexto do Backend](._docs/backend/contexto_atual.md)**: Detalhes das rotas, modelos Prisma, transações e utilitários de assentos.
+- **[Guia de Testes Manuais da API](._docs/backend/TESTES_MANUAIS_API.md)**: Collection de exemplos cURL / Postman / Bruno para chamada direta dos endpoints.
+- **[Documentação do Frontend](._docs/frontend/contexto_atual.md)**: Arquitetura, dependências e padrões do Next.js.
+- **[Workflow e Guia das Telas](._docs/frontend/Frontend-workflow.md)**: Descrição detalhada do que cada tela faz e suas regras de negócio.
