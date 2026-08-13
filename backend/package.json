@@ -21,6 +21,7 @@
   "license": "ISC",
   "packageManager": "pnpm@10.20.0",
   "dependencies": {
+    "@": "link:./src",
     "@prisma/adapter-pg": "^7.9.1",
     "@prisma/client": "^7.9.1",
     "@types/cors": "^2.8.19",
@@ -46,7 +47,6 @@
     "prisma": "^7.9.1",
     "supertest": "^7.2.2",
     "ts-jest": "^29.4.12",
-    "tsc-alias": "^1.9.1",
     "tsx": "^4.23.11",
     "typescript": "^5.7.3"
   },
