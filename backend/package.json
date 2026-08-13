@@ -6,7 +6,7 @@
   "main": "src/app.js",
   "scripts": {
     "dev": "tsx --watch --env-file=.env src/server.ts",
-    "build": "tsc && tsc-alias",
+    "build": "tsc",
     "start": "node dist/server.js",
     "postinstall": "prisma generate",
     "db:generate": "prisma generate",
