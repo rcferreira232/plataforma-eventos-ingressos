@@ -13,7 +13,7 @@ import { healthRouter } from "./routes/health-check-prisma.js";
 const app: Express = express();
 
 const corsOptions = {
-  origin: env.allowOrigin,
+  origin: "*",
   credentials: true,
 };
 
