@@ -192,6 +192,8 @@ function EventDetailsContent({ id }: EventDetailsContentProps) {
               <Image
                 src={`https://image.tmdb.org/t/p/w500${event.posterPath}`}
                 alt={event.title}
+                width={200}
+                height={300}
                 className='w-36 h-52 object-cover rounded-xl shadow-2xl border-2 border-border shrink-0'
               />
             )}

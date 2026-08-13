@@ -160,6 +160,8 @@ export default function NewEventPage() {
               <Image
                 src={`https://image.tmdb.org/t/p/w500${selectedMovie.posterPath}`}
                 alt={selectedMovie.title}
+                width={200}
+                height={300}
                 className='w-24 h-36 object-cover rounded-lg shadow-md shrink-0 border border-border'
               />
             ) : (
