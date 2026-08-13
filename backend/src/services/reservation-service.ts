@@ -5,7 +5,8 @@ import {
   type CreateReservationInput,
   type CheckoutReservationInput,
 } from "@/schemas/reservation-schemas";
-import { ConflictError, ForbiddenError, NotFoundError } from "@/libs/errors";
+import { AppError, ConflictError, ForbiddenError, NotFoundError } from "@/libs/errors";
+import { isSeatWithinCapacity } from "@/utils/seat-utils";
 import { prisma } from "@/libs/prisma";
 import crypto from "crypto";
 
@@ -45,7 +46,14 @@ export class ReservationService {
         throw new NotFoundError("Event not found");
       }
 
-      const quantity = data.quantity ?? 1;
+      if (!isSeatWithinCapacity(data.seatCode, event.capacity)) {
+        throw new AppError(
+          `Seat code ${data.seatCode} is invalid or exceeds event capacity limits`,
+          400,
+        );
+      }
+
+      const quantity = 1;
       const occupiedQuantity =
         await this.reservationRepository.getOccupiedQuantity(data.eventId, tx);
 
@@ -53,16 +61,14 @@ export class ReservationService {
         throw new ConflictError("No seats available for this event");
       }
 
-      if (data.seatCode) {
-        const existingSeat = await this.reservationRepository.getByEventSeat(
-          data.eventId,
-          data.seatCode,
-          tx,
-        );
+      const existingSeat = await this.reservationRepository.getByEventSeat(
+        data.eventId,
+        data.seatCode,
+        tx,
+      );
 
-        if (existingSeat) {
-          throw new ConflictError("Seat already reserved");
-        }
+      if (existingSeat) {
+        throw new ConflictError("Seat already reserved");
       }
 
       try {
@@ -70,8 +76,8 @@ export class ReservationService {
           {
             userId,
             eventId: data.eventId,
-            quantity,
-            seatCode: data.seatCode ?? null,
+            quantity: 1,
+            seatCode: data.seatCode,
             status: "PENDING",
           },
           tx,
