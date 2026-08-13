@@ -6,9 +6,9 @@
   "main": "src/app.js",
   "scripts": {
     "dev": "tsx --watch --env-file=.env src/server.ts",
-    "vercel-build": "prisma generate",
     "build": "tsc",
     "start": "node dist/server.js",
+    "postinstall": "prisma generate",
     "db:generate": "prisma generate",
     "db:push": "prisma db push",
     "db:migrate": "prisma migrate dev",
