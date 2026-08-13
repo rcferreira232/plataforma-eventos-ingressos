@@ -39,7 +39,8 @@ export function isSeatWithinCapacity(
     return false;
   }
 
-  const [rowName, seatStr] = match;
+  const rowName = match[1];
+  const seatStr = match[2];
   if (!rowName || !seatStr) {
     return false;
   }
