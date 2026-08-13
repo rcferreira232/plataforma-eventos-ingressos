@@ -1,16 +1,18 @@
-# Testes Manuais da API (Postman, Insomnia ou curl)
+# Testes Manuais da API (Postman, Insomnia, Bruno ou curl)
 
-Este guia cobre o fluxo completo e os cenarios de portaria.
+Este guia cobre o fluxo completo e os cenários de teste manual atualizados da API.
 
-## 1. Preparacao
+---
 
-1. Suba o banco:
+## 1. Preparação do Ambiente
+
+1. Suba o banco de dados via Docker Compose (raiz do projeto):
 
 ```bash
-docker compose up -d
+docker compose up --build postgres
 ```
 
-2. Prepare prisma e seed:
+2. Execute as migrações, geração do Prisma Client e o Seed:
 
 ```bash
 pnpm db:generate
@@ -18,225 +20,157 @@ pnpm db:push
 pnpm prisma db seed
 ```
 
-3. Rode a API:
+3. Inicie o servidor de desenvolvimento backend:
 
 ```bash
 pnpm dev
 ```
 
-Base URL sugerida:
+Base URL: `http://localhost:3000`
 
-- `http://localhost:3000`
+---
 
-Use Postman ou Insomnia para criar uma collection com variaveis de ambiente, eu usei o Bruno com as seguintes variaveis:
+## 2. Usuários Pré-Cadastrados pelo Seed
 
-```text
-  base_url
-  CUSTOMER_TOKEN
-  id_user
-  id_reservation
-  id_event
-  id_ticket
-  ORGANIZER_TOKEN
-  GATEKEEPER_TOKEN
-  organizer_email
-  customer1_email
-  gatekeeper_email
-  share_link
-  ticket_code
-```
+- **Organizador**: `organizer@example.com` / `password123` (`ROLE: ORGANIZER`)
+- **Cliente 1**: `customer@example.com` / `password123` (`ROLE: CUSTOMER`)
+- **Cliente 2**: `customer2@example.com` / `password123` (`ROLE: CUSTOMER`)
+- **Portaria**: `gatekeeper@example.com` / `password123` (`ROLE: GATEKEEPER`)
 
-Ajuda bastante para manter o fluxo de testes manual organizado e com menos chance de erro.
+---
 
-## 2. Login e Tokens
+## 3. Fluxo de Autenticação
+
+### Login de Usuário
 
 `POST /users/login`
 
-- script: Assim que usuários forem logados, guarde os tokens nas variaveis de ambiente. Eu seto o token que vem do data para todos os perfil para que sempre tenha token nas variaveis de ambiente, mas o ideal é setar cada token no perfil correto. Se um usuário ORGANIZER logar, o token dele vai para variavel ORGANIZER_TOKEN, CUSTOMER... e GATEKEEPER.
-
-```js
-const body = res.getBody();
-
-bru.setEnvVar("ORGANIZER_TOKEN", body.data.token);
-bru.setEnvVar("CUSTOMER_TOKEN", body.data.token);
-bru.setEnvVar("GATEKEEPER_TOKEN", body.data.token);
-```
-
-Body:
+**Body**:
 
 ```json
 {
-  "email": "{{organizer_email}}",
+  "email": "organizer@example.com",
   "password": "password123"
 }
 ```
 
-Guarde `data.token` como `ORGANIZER_TOKEN`.
+_Armazene o `data.token` gerado nos headers `Authorization: Bearer <TOKEN>` das requisições subsequentes._
 
-O seed gera 3 users, armazene os emails nas variaveis de ambiente. Eu fiz um login para cada usuário.
+---
 
-## 3 Body dos endpoints de user:
+## 4. Gestão de Eventos e TMDB (`ORGANIZER`)
 
-- `POST /users/login`
-- `POST /users`
-- `GET /users`
-- `GET /users/:id`
-- `PUT /users/:id`
-- `DELETE /users/:id`
+### Consultar Filmes Populares do TMDB
 
-- Criar usuário: POST /users
+`GET /tmdb/popular?page=1`
 
-```js
-{{base_url}}/users
-```
+- Header: `Authorization: Bearer <ORGANIZER_TOKEN>`
 
-```json
-{
-  "email": "r@example.com",
-  "name": "Rafael Organizer",
-  "password": "password123",
-  "role": "ORGANIZER"
-}
-```
+### Criar Evento
 
-- Listar todos os usuários: GET /users
+`POST /events`
 
-```js
-{{base_url}}/users
-```
+- Header: `Authorization: Bearer <ORGANIZER_TOKEN>`
 
-- Listar usuário por id: GET /users/:id
-
-```js
-{{base_url}}/users/{{id_user}}
-```
-
-- Atualizar usuário: PUT /users/:id
-
-```js
-{{base_url}}/users/{{id_user}}
-```
+**Body (Com referência ao TMDB)**:
 
 ```json
 {
-  "email": "r@g.com",
-  "name": "Rafael Organizer",
-  "password": "password123",
-  "role": "ORGANIZER"
-}
-```
-
-- Deletar usuário: DELETE /users/:id
-
-```js
-{{base_url}}/users/{{id_user}}
-```
-
-## 4 Body dos endpoints de event:
-
-- `POST /events` (ORGANIZER), set o `Authorization: Bearer ORGANIZER_TOKEN` no header
-- `GET /events`
-- `GET /events/:id`
-
-1. Criar evento: POST /events
-
-```js
-{{base_url}}/events
-```
-
-```json
-{
-  "title": "Teste",
+  "title": "Avatar: O Caminho da Água",
   "date": "2026-12-31T20:00:00Z",
-  "location": "Estádio Nacional",
-  "capacity": 50000,
-  "price": 150.0,
-  "organizerId": "{{id_user}}"
+  "location": "Cinema IMAX Sala 1",
+  "capacity": 50,
+  "price": 45.0,
+  "externalRef": "76600"
 }
 ```
 
-2. Listar eventos: GET /events
+### Listar Eventos (Público / Cliente)
 
-```js
-{{base_url}}/events
-```
+`GET /events`
 
-3. Listar evento por id: GET /events/:id
+---
 
-```js
-{{base_url}}/events/{{id_event}}
-```
+## 5. Fluxo de Reserva e Seleção de Assentos (`CUSTOMER`)
 
-## 5 Body dos endpoints de reservation:
+### Criar Reserva de Assento
 
-- `POST /reservations` (CUSTOMER), set o `Authorization: Bearer CUSTOMER_TOKEN` no header
-- `POST /reservations/:id/checkout` (CUSTOMER), set o `Authorization: Bearer CUSTOMER_TOKEN` no header
+`POST /reservations`
 
-1. Criar reserva: POST /reservations
+- Header: `Authorization: Bearer <CUSTOMER_TOKEN>`
 
-```js
-{{base_url}}/reservations
-```
+_Nota: O `seatCode` deve seguir o padrão `Fila-Número` (ex: `A-1`, `A-10`, `B-5`) e estar dentro da capacidade do evento (50 lugares = Filas A a E)._
+
+**Body**:
 
 ```json
 {
-  "eventId": "{{id_event}}",
+  "eventId": "<ID_DO_EVENTO>",
   "quantity": 1,
-  "seatCode": "A-10"
+  "seatCode": "A-1"
 }
 ```
 
-2. Checkout confirmado: POST /reservations/:id/checkout
+### Checkout Simulado
 
-```js
-{{base_url}}/reservations/{{id_reservation}}/checkout
-```
+`POST /reservations/:id/checkout`
+
+- Header: `Authorization: Bearer <CUSTOMER_TOKEN>`
+
+**Body (Confirmação)**:
 
 ```json
 {
   "decision": "CONFIRM"
 }
+```
 
-// ou
+**Body (Recusa)**:
 
+```json
 {
   "decision": "DECLINE"
 }
 ```
 
-## 6 body dos endpoints de ticket:
+---
 
-- `GET /tickets/me` (CUSTOMER), set o `Authorization: Bearer CUSTOMER_TOKEN` no header
-- `GET /tickets/shared/:id?token=...`
-- `POST /tickets/validate-entry` (GATEKEEPER), set o `Authorization: Bearer GATEKEEPER_TOKEN` no header
+## 6. Gestão e Compartilhamento de Ingressos (`CUSTOMER`)
 
-1. Listar meus ingressos: GET /tickets/me
+### Meus Ingressos
 
-```js
-{{base_url}}/tickets/me
-```
+`GET /tickets/me`
 
-2. Abrir ingresso compartilhado: GET /tickets/shared/:id?token=...
+- Header: `Authorization: Bearer <CUSTOMER_TOKEN>`
 
-```
-{{base_url}}{{share_link}}
-```
+_Retorna a lista de ingressos do cliente com `id`, `code` (UUID) e `shareLink`._
 
-3. Validar ingresso na portaria: POST /tickets/validate-entry
+### Acessar Ingresso Compartilhado (Público)
 
-```js
-{{base_url}}/tickets/validate-entry
-```
+`GET /tickets/shared/:id?token=<HMAC_TOKEN>`
+
+---
+
+## 7. Validação de Portaria (`GATEKEEPER`)
+
+### Validar Entrada na Portaria
+
+`POST /tickets/validate-entry`
+
+- Header: `Authorization: Bearer <GATEKEEPER_TOKEN>`
+
+**Body**:
 
 ```json
 {
-  "code": "{{ticket_code}}",
-  "eventId": "{{id_event}}"
+  "code": "<UUID_DO_INGRESSO>",
+  "eventId": "<ID_DO_EVENTO>"
 }
 ```
 
-## 7. Dicas para Postman/Insomnia
+**Respostas Possíveis (`validationStatus`)**:
 
-- Em cada login, atualize automaticamente os tokens nas variaveis.
-- Caso tome erro de autenticacao, verifique se os tokens estao corretos.
-- Monte uma collection por fluxo: login, eventos, reservas, checkout, ingressos, portaria.
+- `VALID`: Entrada liberada, status do ingresso alterado para `USED`.
+- `ALREADY_USED`: Ingresso já foi utilizado anteriormente.
+- `WRONG_EVENT`: Ingresso pertence a outro evento.
+- `INVALID`: Código de ingresso inexistente.
