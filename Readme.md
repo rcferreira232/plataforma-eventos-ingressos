@@ -220,3 +220,13 @@ pnpm typecheck
 - **[Guia de Testes Manuais da API](._docs/backend/TESTES_MANUAIS_API.md)**: Collection de exemplos cURL / Postman / Bruno para chamada direta dos endpoints.
 - **[Documentação do Frontend](._docs/frontend/contexto_atual.md)**: Arquitetura, dependências e padrões do Next.js.
 - **[Workflow e Guia das Telas](._docs/frontend/Frontend-workflow.md)**: Descrição detalhada do que cada tela faz e suas regras de negócio.
+
+## Deploy
+
+### Backend:
+
+- https://plataforma-eventos-ingressos-sigma.vercel.app/
+
+### Frontend:
+
+- https://meuingresso-zeta.vercel.app/

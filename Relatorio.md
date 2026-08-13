@@ -233,3 +233,11 @@ Notas: Hoje foi um dia focado em deploy. Meu plano inicial era fazer deploy do f
 No final tudo deu certo, consegui fazer deploy do backend, frontend e banco de dados, e tudo funcionando perfeitamente.
 
 Obeservação: Não falei do deploy do banco de dados, mas foi bem simples, usei a vercel para subir um banco prisma + postgres, ele me gerou uma string de conexão, que eu usei no backend. Apartir de agora como a branch main está branch de produção, qualquer alteração que eu fizer no backend e frontend vai subir automaticamente para produção, então usarei branch antes de subir alguma coisa na branch main e depois de testado faço merge para a branch main. Farei isso para garantir que não quebre nada no momento que Alguém acessar a aplicação.
+
+Deploy Backend:
+
+- https://plataforma-eventos-ingressos-sigma.vercel.app/
+
+Deploy Frontend:
+
+- https://meuingresso-zeta.vercel.app/
