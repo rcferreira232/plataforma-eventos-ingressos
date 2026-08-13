@@ -8,6 +8,7 @@ import { reservationRouter } from "./routes/reservation-routes.js";
 import { ticketRouter } from "./routes/ticket-routes.js";
 import { errorHandler } from "./middlewares/error-middleware.js";
 import { env } from "./config/env.js";
+import { healthRouter } from "./routes/health-check-prisma.js";
 
 const app: Express = express();
 
@@ -26,6 +27,7 @@ app.use("/events", eventRouter);
 app.use("/tmdb", tmdbRouter);
 app.use("/reservations", reservationRouter);
 app.use("/tickets", ticketRouter);
+app.use("/health", healthRouter);
 
 app.use(errorHandler);
 
