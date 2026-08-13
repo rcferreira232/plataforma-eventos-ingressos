@@ -13,6 +13,7 @@ export const app: Express = express();
 
 const corsOptions = {
   origin: env.allowOrigin,
+  credentials: true,
 };
 
 app.use(express.urlencoded({ extended: true }));
