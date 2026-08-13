@@ -1,15 +1,15 @@
 import express, { type Express } from "express";
 import cors from "cors";
 import morgan from "morgan";
-import { userRouter } from "./routes/user-routes.ts";
-import { eventRouter } from "./routes/event-routes.ts";
-import { tmdbRouter } from "./routes/tmdb-routes.ts";
-import { reservationRouter } from "./routes/reservation-routes.ts";
-import { ticketRouter } from "./routes/ticket-routes.ts";
-import { errorHandler } from "./middlewares/error-middleware.ts";
-import { env } from "./config/env.ts";
+import { userRouter } from "./routes/user-routes";
+import { eventRouter } from "./routes/event-routes";
+import { tmdbRouter } from "./routes/tmdb-routes";
+import { reservationRouter } from "./routes/reservation-routes";
+import { ticketRouter } from "./routes/ticket-routes";
+import { errorHandler } from "./middlewares/error-middleware";
+import { env } from "./config/env";
 
-export const app: Express = express();
+const app: Express = express();
 
 const corsOptions = {
   origin: env.allowOrigin,
@@ -28,3 +28,5 @@ app.use("/reservations", reservationRouter);
 app.use("/tickets", ticketRouter);
 
 app.use(errorHandler);
+
+export default app;
