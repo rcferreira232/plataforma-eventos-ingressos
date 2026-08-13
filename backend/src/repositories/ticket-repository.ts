@@ -1,8 +1,4 @@
-import {
-  type Prisma,
-  type Ticket,
-  type TicketStatus,
-} from "@/generated/prisma/client";
+import { type Prisma, type Ticket, type TicketStatus } from "@prisma/client";
 import { prisma } from "@/libs/prisma";
 
 type TransactionClient = Prisma.TransactionClient;

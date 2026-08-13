@@ -1,5 +1,5 @@
 import request from "supertest";
-import { app } from "@/app";
+import app from "@/app";
 import { prisma } from "@/libs/prisma";
 import jwt from "jsonwebtoken";
 import { env } from "@/config/env";

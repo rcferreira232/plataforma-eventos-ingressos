@@ -2,7 +2,7 @@ import {
   type Reservation,
   type Prisma,
   type ReservationStatus,
-} from "@/generated/prisma/client";
+} from "@prisma/client";
 import { prisma } from "@/libs/prisma";
 
 type TransactionClient = Prisma.TransactionClient;

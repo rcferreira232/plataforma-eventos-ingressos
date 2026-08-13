@@ -1,5 +1,5 @@
 import request from "supertest";
-import { app } from "@/app";
+import app from "@/app";
 import { prisma } from "@/libs/prisma";
 
 describe("Testes de Integração de Usuário", () => {

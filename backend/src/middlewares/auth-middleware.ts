@@ -2,7 +2,7 @@ import { type Request, type Response, type NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import { env } from "@/config/env";
 import { UnauthorizedError, ForbiddenError } from "@/libs/errors";
-import { Role } from "@/generated/prisma/enums";
+import { Role } from "@prisma/client";
 
 type JwtPayload = {
   id: string;

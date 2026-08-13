@@ -1,4 +1,4 @@
-import { type Event, type Prisma } from "@/generated/prisma/client";
+import { type Event, type Prisma } from "@prisma/client";
 import { prisma } from "@/libs/prisma";
 
 export interface IEventRepository {

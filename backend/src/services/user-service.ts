@@ -1,6 +1,6 @@
 import crypto from "crypto";
 import jwt from "jsonwebtoken";
-import { type User, type Prisma } from "@/generated/prisma/client";
+import { type User, type Prisma } from "@prisma/client";
 import { type IUserRepository } from "@/repositories/user-repository";
 import {
   type CreateUserInput,
@@ -35,7 +35,7 @@ export class UserService {
     const token = jwt.sign(
       { id: user.id, email: user.email, role: user.role },
       env.jwtSecret,
-      { expiresIn: "1d" }
+      { expiresIn: "1d" },
     );
 
     return { token };

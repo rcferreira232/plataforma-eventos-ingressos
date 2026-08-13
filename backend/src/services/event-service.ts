@@ -1,4 +1,4 @@
-import { type Event } from "@/generated/prisma/client";
+import { type Event } from "@prisma/client";
 import { type IEventRepository } from "@/repositories/event-repository";
 import { type CreateEventInput } from "@/schemas/event-schemas";
 import { NotFoundError } from "@/libs/errors";

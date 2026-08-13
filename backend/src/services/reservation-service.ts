@@ -1,11 +1,16 @@
-import { Prisma, type Reservation } from "@/generated/prisma/client";
+import { Prisma, type Reservation } from "@prisma/client";
 import { type IReservationRepository } from "@/repositories/reservation-repository";
 import { type ITicketRepository } from "@/repositories/ticket-repository";
 import {
   type CreateReservationInput,
   type CheckoutReservationInput,
 } from "@/schemas/reservation-schemas";
-import { AppError, ConflictError, ForbiddenError, NotFoundError } from "@/libs/errors";
+import {
+  AppError,
+  ConflictError,
+  ForbiddenError,
+  NotFoundError,
+} from "@/libs/errors";
 import { isSeatWithinCapacity } from "@/utils/seat-utils";
 import { prisma } from "@/libs/prisma";
 import crypto from "crypto";

@@ -1,5 +1,5 @@
 import crypto from "crypto";
-import { Prisma } from "@/generated/prisma/client";
+import { Prisma } from "@prisma/client";
 import { type ITicketRepository } from "@/repositories/ticket-repository";
 import { env } from "@/config/env";
 import { ForbiddenError, NotFoundError } from "@/libs/errors";
