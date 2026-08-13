@@ -1,7 +1,7 @@
 import { type Request, type Response, type NextFunction } from "express";
-import { type TicketService } from "@/services/ticket-service";
-import { type ValidateTicketEntryInput } from "@/schemas/ticket-schemas";
-import { BadRequestError, UnauthorizedError } from "@/libs/errors";
+import { type TicketService } from "@/services/ticket-service.js";
+import { type ValidateTicketEntryInput } from "@/schemas/ticket-schemas.js";
+import { BadRequestError, UnauthorizedError } from "@/libs/errors.js";
 
 export class TicketController {
   constructor(private ticketService: TicketService) {}

@@ -1,10 +1,14 @@
 import { Router } from "express";
-import { PrismaUserRepository } from "@/repositories/user-repository";
-import { UserService } from "@/services/user-service";
-import { UserController } from "@/controllers/user-controller";
+import { PrismaUserRepository } from "@/repositories/user-repository.js";
+import { UserService } from "@/services/user-service.js";
+import { UserController } from "@/controllers/user-controller.js";
 
-import { validate } from "@/middlewares/validate-middleware";
-import { createUserSchema, updateUserSchema, loginUserSchema } from "@/schemas/user-schemas";
+import { validate } from "@/middlewares/validate-middleware.js";
+import {
+  createUserSchema,
+  updateUserSchema,
+  loginUserSchema,
+} from "@/schemas/user-schemas.js";
 
 const userRouter: Router = Router();
 

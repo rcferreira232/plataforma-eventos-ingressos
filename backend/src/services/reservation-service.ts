@@ -1,18 +1,18 @@
 import { Prisma, type Reservation } from "@prisma/client";
-import { type IReservationRepository } from "@/repositories/reservation-repository";
-import { type ITicketRepository } from "@/repositories/ticket-repository";
+import { type IReservationRepository } from "@/repositories/reservation-repository.js";
+import { type ITicketRepository } from "@/repositories/ticket-repository.js";
 import {
   type CreateReservationInput,
   type CheckoutReservationInput,
-} from "@/schemas/reservation-schemas";
+} from "@/schemas/reservation-schemas.js";
 import {
   AppError,
   ConflictError,
   ForbiddenError,
   NotFoundError,
-} from "@/libs/errors";
-import { isSeatWithinCapacity } from "@/utils/seat-utils";
-import { prisma } from "@/libs/prisma";
+} from "@/libs/errors.js";
+import { isSeatWithinCapacity } from "@/utils/seat-utils.js";
+import { prisma } from "@/libs/prisma.js";
 import crypto from "crypto";
 
 type CheckoutResult = {

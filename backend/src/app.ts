@@ -1,13 +1,13 @@
 import express, { type Express } from "express";
 import cors from "cors";
 import morgan from "morgan";
-import { userRouter } from "./routes/user-routes";
-import { eventRouter } from "./routes/event-routes";
-import { tmdbRouter } from "./routes/tmdb-routes";
-import { reservationRouter } from "./routes/reservation-routes";
-import { ticketRouter } from "./routes/ticket-routes";
-import { errorHandler } from "./middlewares/error-middleware";
-import { env } from "./config/env";
+import { userRouter } from "./routes/user-routes.js";
+import { eventRouter } from "./routes/event-routes.js";
+import { tmdbRouter } from "./routes/tmdb-routes.js";
+import { reservationRouter } from "./routes/reservation-routes.js";
+import { ticketRouter } from "./routes/ticket-routes.js";
+import { errorHandler } from "./middlewares/error-middleware.js";
+import { env } from "./config/env.js";
 
 const app: Express = express();
 

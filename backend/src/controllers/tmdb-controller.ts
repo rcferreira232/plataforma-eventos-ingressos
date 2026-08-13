@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { TMDBService } from "../services/external/tmdb-service";
+import { TMDBService } from "../services/external/tmdb-service.js";
 
 export class TMDBController {
   static async getPopular(req: Request, res: Response, next: NextFunction) {

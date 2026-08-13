@@ -1,14 +1,14 @@
 import { Router } from "express";
-import { PrismaReservationRepository } from "@/repositories/reservation-repository";
-import { PrismaTicketRepository } from "@/repositories/ticket-repository";
-import { ReservationService } from "@/services/reservation-service";
-import { ReservationController } from "@/controllers/reservation-controller";
-import { authMiddleware } from "@/middlewares/auth-middleware";
-import { validate } from "@/middlewares/validate-middleware";
+import { PrismaReservationRepository } from "@/repositories/reservation-repository.js";
+import { PrismaTicketRepository } from "@/repositories/ticket-repository.js";
+import { ReservationService } from "@/services/reservation-service.js";
+import { ReservationController } from "@/controllers/reservation-controller.js";
+import { authMiddleware } from "@/middlewares/auth-middleware.js";
+import { validate } from "@/middlewares/validate-middleware.js";
 import {
   createReservationSchema,
   checkoutReservationSchema,
-} from "@/schemas/reservation-schemas";
+} from "@/schemas/reservation-schemas.js";
 
 const reservationRouter: Router = Router();
 

@@ -1,7 +1,7 @@
 import { type Request, type Response, type NextFunction } from "express";
 import jwt from "jsonwebtoken";
-import { env } from "@/config/env";
-import { UnauthorizedError, ForbiddenError } from "@/libs/errors";
+import { env } from "@/config/env.js";
+import { UnauthorizedError, ForbiddenError } from "@/libs/errors.js";
 import { Role } from "@prisma/client";
 
 type JwtPayload = {

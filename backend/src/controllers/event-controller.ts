@@ -1,7 +1,7 @@
 import { type Request, type Response, type NextFunction } from "express";
-import { type EventService } from "@/services/event-service";
-import { type CreateEventInput } from "@/schemas/event-schemas";
-import { UnauthorizedError, BadRequestError } from "@/libs/errors";
+import { type EventService } from "@/services/event-service.js";
+import { type CreateEventInput } from "@/schemas/event-schemas.js";
+import { UnauthorizedError, BadRequestError } from "@/libs/errors.js";
 
 export class EventController {
   constructor(private eventService: EventService) {}
@@ -14,12 +14,15 @@ export class EventController {
     try {
       const validatedData = req.body as CreateEventInput;
       const organizerId = req.user?.id;
-      
+
       if (!organizerId) {
         throw new UnauthorizedError("User is not authenticated");
       }
 
-      const event = await this.eventService.createEvent(validatedData, organizerId);
+      const event = await this.eventService.createEvent(
+        validatedData,
+        organizerId,
+      );
       res.status(201).json({
         status: "success",
         data: event,

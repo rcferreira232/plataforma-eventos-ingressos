@@ -1,6 +1,6 @@
-import { env } from "@/config/env";
-import { AppError } from "@/libs/errors";
-import { TMDBMovie, TMDBMovieDTO } from "@/interface/tmdb";
+import { env } from "@/config/env.js";
+import { AppError } from "@/libs/errors.js";
+import { TMDBMovie, TMDBMovieDTO } from "@/interface/tmdb.js";
 
 export class TMDBService {
   private static get headers() {

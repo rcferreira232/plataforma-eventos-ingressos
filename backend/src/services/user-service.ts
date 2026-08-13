@@ -1,14 +1,18 @@
 import crypto from "crypto";
 import jwt from "jsonwebtoken";
 import { type User, type Prisma } from "@prisma/client";
-import { type IUserRepository } from "@/repositories/user-repository";
+import { type IUserRepository } from "@/repositories/user-repository.js";
 import {
   type CreateUserInput,
   type UpdateUserInput,
   type LoginUserInput,
-} from "@/schemas/user-schemas";
-import { ConflictError, NotFoundError, UnauthorizedError } from "@/libs/errors";
-import { env } from "@/config/env";
+} from "@/schemas/user-schemas.js";
+import {
+  ConflictError,
+  NotFoundError,
+  UnauthorizedError,
+} from "@/libs/errors.js";
+import { env } from "@/config/env.js";
 
 export class UserService {
   constructor(private userRepository: IUserRepository) {}

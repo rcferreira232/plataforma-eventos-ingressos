@@ -1,11 +1,11 @@
 import { Router } from "express";
-import { PrismaEventRepository } from "@/repositories/event-repository";
-import { EventService } from "@/services/event-service";
-import { EventController } from "@/controllers/event-controller";
+import { PrismaEventRepository } from "@/repositories/event-repository.js";
+import { EventService } from "@/services/event-service.js";
+import { EventController } from "@/controllers/event-controller.js";
 
-import { validate } from "@/middlewares/validate-middleware";
-import { authMiddleware } from "@/middlewares/auth-middleware";
-import { createEventSchema } from "@/schemas/event-schemas";
+import { validate } from "@/middlewares/validate-middleware.js";
+import { authMiddleware } from "@/middlewares/auth-middleware.js";
+import { createEventSchema } from "@/schemas/event-schemas.js";
 
 const eventRouter: Router = Router();
 
@@ -17,7 +17,7 @@ eventRouter.post(
   "/",
   authMiddleware(["ORGANIZER"]),
   validate(createEventSchema),
-  eventController.create
+  eventController.create,
 );
 
 eventRouter.get("/", eventController.getAll);

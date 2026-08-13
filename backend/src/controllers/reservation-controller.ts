@@ -1,10 +1,10 @@
 import { type Request, type Response, type NextFunction } from "express";
-import { type ReservationService } from "@/services/reservation-service";
+import { type ReservationService } from "@/services/reservation-service.js";
 import {
   type CreateReservationInput,
   type CheckoutReservationInput,
-} from "@/schemas/reservation-schemas";
-import { BadRequestError, UnauthorizedError } from "@/libs/errors";
+} from "@/schemas/reservation-schemas.js";
+import { BadRequestError, UnauthorizedError } from "@/libs/errors.js";
 
 export class ReservationController {
   constructor(private reservationService: ReservationService) {}

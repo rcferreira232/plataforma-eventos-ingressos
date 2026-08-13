@@ -1,8 +1,8 @@
 import { type Event } from "@prisma/client";
-import { type IEventRepository } from "@/repositories/event-repository";
-import { type CreateEventInput } from "@/schemas/event-schemas";
-import { NotFoundError } from "@/libs/errors";
-import { TMDBService } from "./external/tmdb-service";
+import { type IEventRepository } from "@/repositories/event-repository.js";
+import { type CreateEventInput } from "@/schemas/event-schemas.js";
+import { NotFoundError } from "@/libs/errors.js";
+import { TMDBService } from "./external/tmdb-service.js";
 
 export class EventService {
   constructor(private eventRepository: IEventRepository) {}

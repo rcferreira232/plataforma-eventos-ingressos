@@ -1,7 +1,11 @@
 import { type Request, type Response, type NextFunction } from "express";
-import { type UserService } from "@/services/user-service";
-import { type CreateUserInput, type UpdateUserInput, type LoginUserInput } from "@/schemas/user-schemas";
-import { BadRequestError } from "@/libs/errors";
+import { type UserService } from "@/services/user-service.js";
+import {
+  type CreateUserInput,
+  type UpdateUserInput,
+  type LoginUserInput,
+} from "@/schemas/user-schemas.js";
+import { BadRequestError } from "@/libs/errors.js";
 
 export class UserController {
   constructor(private userService: UserService) {}

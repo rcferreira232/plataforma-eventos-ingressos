@@ -1,10 +1,10 @@
 import { Router } from "express";
-import { PrismaTicketRepository } from "@/repositories/ticket-repository";
-import { TicketService } from "@/services/ticket-service";
-import { TicketController } from "@/controllers/ticket-controller";
-import { authMiddleware } from "@/middlewares/auth-middleware";
-import { validate } from "@/middlewares/validate-middleware";
-import { validateTicketEntrySchema } from "@/schemas/ticket-schemas";
+import { PrismaTicketRepository } from "@/repositories/ticket-repository.js";
+import { TicketService } from "@/services/ticket-service.js";
+import { TicketController } from "@/controllers/ticket-controller.js";
+import { authMiddleware } from "@/middlewares/auth-middleware.js";
+import { validate } from "@/middlewares/validate-middleware.js";
+import { validateTicketEntrySchema } from "@/schemas/ticket-schemas.js";
 
 const ticketRouter: Router = Router();
 

@@ -5,7 +5,7 @@ import {
   type ErrorRequestHandler,
 } from "express";
 import { ZodError } from "zod";
-import { AppError } from "../libs/errors";
+import { AppError } from "../libs/errors.js";
 
 export const errorHandler: ErrorRequestHandler = (
   err: Error,

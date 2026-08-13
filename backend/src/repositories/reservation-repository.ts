@@ -3,7 +3,7 @@ import {
   type Prisma,
   type ReservationStatus,
 } from "@prisma/client";
-import { prisma } from "@/libs/prisma";
+import { prisma } from "@/libs/prisma.js";
 
 type TransactionClient = Prisma.TransactionClient;
 

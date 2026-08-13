@@ -1,10 +1,10 @@
 import crypto from "crypto";
 import { Prisma } from "@prisma/client";
-import { type ITicketRepository } from "@/repositories/ticket-repository";
-import { env } from "@/config/env";
-import { ForbiddenError, NotFoundError } from "@/libs/errors";
-import { prisma } from "@/libs/prisma";
-import { type ValidateTicketEntryInput } from "@/schemas/ticket-schemas";
+import { type ITicketRepository } from "@/repositories/ticket-repository.js";
+import { env } from "@/config/env.js";
+import { ForbiddenError, NotFoundError } from "@/libs/errors.js";
+import { prisma } from "@/libs/prisma.js";
+import { type ValidateTicketEntryInput } from "@/schemas/ticket-schemas.js";
 
 type TicketView = {
   id: string;

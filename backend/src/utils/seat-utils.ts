@@ -1,7 +1,3 @@
-/**
- * Converte um índice numérico de fila (0-indexed) para o nome da fila em letras.
- * 0 -> A, 25 -> Z, 26 -> AA, 27 -> AB, etc.
- */
 export function getRowName(rowIndex: number): string {
   let name = "";
   let index = rowIndex;
@@ -14,10 +10,6 @@ export function getRowName(rowIndex: number): string {
   return name;
 }
 
-/**
- * Converte o nome de uma fila (ex: "A", "Z", "AA") de volta para o índice numérico (0-indexed).
- * A -> 0, Z -> 25, AA -> 26, etc.
- */
 export function getRowIndex(rowName: string): number {
   let index = 0;
   const upper = rowName.toUpperCase();

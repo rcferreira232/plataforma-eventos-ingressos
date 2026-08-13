@@ -1,5 +1,5 @@
 import { type Event, type Prisma } from "@prisma/client";
-import { prisma } from "@/libs/prisma";
+import { prisma } from "@/libs/prisma.js";
 
 export interface IEventRepository {
   create(data: Prisma.EventUncheckedCreateInput): Promise<Event>;
