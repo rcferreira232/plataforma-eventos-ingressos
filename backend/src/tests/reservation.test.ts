@@ -141,7 +141,8 @@ describe("Testes de Integração de Reserva", () => {
       .set("Authorization", `Bearer ${customerToken}`)
       .send({
         eventId,
-        quantity: 2,
+        quantity: 1,
+        seatCode: "A-2",
       })
       .expect(201);
 
@@ -157,7 +158,7 @@ describe("Testes de Integração de Reserva", () => {
 
     expect(checkoutResponse.body).toHaveProperty("status", "success");
     expect(checkoutResponse.body.data.reservation.status).toBe("CONFIRMED");
-    expect(checkoutResponse.body.data.tickets).toHaveLength(2);
+    expect(checkoutResponse.body.data.tickets).toHaveLength(1);
 
     const createdTickets = checkoutResponse.body.data.tickets as Array<{
       code: string;
@@ -175,7 +176,7 @@ describe("Testes de Integração de Reserva", () => {
       },
     });
 
-    expect(ticketsFromDb).toHaveLength(2);
+    expect(ticketsFromDb).toHaveLength(1);
   });
 
   it("deve recusar o checkout e cancelar a reserva sem emitir ingressos", async () => {
@@ -185,6 +186,7 @@ describe("Testes de Integração de Reserva", () => {
       .send({
         eventId,
         quantity: 1,
+        seatCode: "A-3",
       })
       .expect(201);
 
@@ -268,6 +270,7 @@ describe("Testes de Integração de Reserva", () => {
       .send({
         eventId,
         quantity: 1,
+        seatCode: "A-4",
       })
       .expect(201);
 

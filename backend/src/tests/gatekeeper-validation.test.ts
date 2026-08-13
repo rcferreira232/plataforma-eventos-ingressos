@@ -99,6 +99,7 @@ describe("Testes de Integração da Portaria", () => {
         userId: customerId,
         eventId: eventAId,
         quantity: 1,
+        seatCode: "A-1",
         status: "CONFIRMED",
       },
     });

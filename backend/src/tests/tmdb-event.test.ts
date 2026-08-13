@@ -4,8 +4,7 @@ import { prisma } from "@/libs/prisma";
 import jwt from "jsonwebtoken";
 import { env } from "@/config/env";
 import { TMDBService } from "@/services/external/tmdb-service";
-
-jest.mock("@/services/external/tmdb-service");
+import { jest } from "@jest/globals";
 
 describe("Testes de Integração do TMDB e Eventos", () => {
   let organizerToken: string;
@@ -70,7 +69,9 @@ describe("Testes de Integração do TMDB e Eventos", () => {
         },
       ];
 
-      (TMDBService.getPopularMovies as jest.Mock).mockResolvedValue(mockPopularMovies);
+      const spy = jest
+        .spyOn(TMDBService, "getPopularMovies")
+        .mockResolvedValue(mockPopularMovies);
 
       const response = await request(app)
         .get("/tmdb/popular?page=1")
@@ -78,7 +79,8 @@ describe("Testes de Integração do TMDB e Eventos", () => {
         .expect(200);
 
       expect(response.body).toEqual(mockPopularMovies);
-      expect(TMDBService.getPopularMovies).toHaveBeenCalledWith(1);
+      expect(spy).toHaveBeenCalledWith(1);
+      spy.mockRestore();
     });
 
     it("Deve negar acesso ao endpoint de filmes populares para CUSTOMER", async () => {
