@@ -132,6 +132,97 @@ O resultado em si foi muito bom, tive que fazer alguns ajustes incrementais nos 
     - Topbar.
     - Rodapé.
 
-Notas: O frontend ainda está em desenvolvimento, mas já consegui criar a estrutura de pastas, definir as libs que irei utilizar, criar o styling global com Tailwind CSS, definir as rotas e páginas, definir a biblioteca de UI (Shadcn) e criar alguns componentes básicos. Demorei muito para decidir a biblioteca de UI, tentei usar a HeroUI, mas não gostei muito do resultado principalmente por causa do layout escolhido de base, então resolvi usar a Shadcn. Instalei a lib ele adicionou libs a mais, alterou globals.css e adcionei o button padrão da lib. Daqui para frente irei criar os componentes: site-header, site-footer e nav-menu, e depois integrei eles com meu root layout. Teve outras coisas como types da api no arquivo `types/index.ts`, provider do react-query, api.ts para fazer as chamadas à API, auth.service para gerenciar a autenticação e use-auth hook, mas esse foram menos trabalhosos.
+Notas: O frontend ainda está em desenvolvimento, mas já consegui criar a estrutura de pastas, definir as libs que irei utilizar, criar o styling global com Tailwind CSS, definir as rotas e páginas, definir a biblioteca de UI (Shadcn) e criar alguns componentes básicos. Demorei muito para decidir a biblioteca de UI, tentei usar a HeroUI, mas não gostei muito do resultado principalmente por causa do layout escolhido de base, então resolvi usar a Shadcn. Instalei a lib ele adicionou libs a mais, alterou globals.css e adcionei o button padrão da lib. Daqui para frente irei criar os componentes: site-header, site-footer e nav-menu, e depois integrei eles com meu root layout. Teve outras coisas como types da API no arquivo `types/index.ts`, provider do react-query, API.ts para fazer as chamadas à API, auth.service para gerenciar a autenticação e use-auth hook, mas esse foram menos trabalhosos.
 
-Observação: Como a shadcn adicionou muitos estilos, usei IA para adaptar para minha paleta de cores, como já tinha muitos estilos definidos e fiz a base do site-header, site-footer e nav-menu, pedi para IA melhorar o site-header, site-footer e nav-menu para ficar mais parecido com o layout do ingresso.com, e depois pedi para IA melhorar o layout do site-header, site-footer e nav-menu para ficar mais parecido com o layout do ingresso.com.
+Observação: Como a shadcn adicionou muitos estilos, usei IA para adaptar para minha paleta de cores, como já tinha muitos estilos definidos e fiz a base do site-header, site-footer e nav-menu, pedi para IA melhorar o site-header, site-footer e nav-menu para ficar mais parecido com o layout do ingresso.com, e depois pedi para IA melhorar o layout do site-header, site-footer e nav-menu para ficar mais parecido com o layout do ingresso.com. No final da noite consegui terminar o todo o design system do site, parte que considero essencial para o desenvolvimento do frontend, pois com ele pronto consigo usar prompts mais eficientes e que não quebram o layout.
+
+## Dia 12/08/2026
+
+Notas: Como o tempo do desafio e ontem fechei partes chaves do meu frontend, hoje eu usei prompts bem parudos para gerar o restante do frontend, como páginas, componentes. A IA conseguiu gerar o código de forma Ok, mas tive que fazer alguns ajustes bem pequenos, principal com coisa bem particulares do nextjs, como o uso do Image do nextjs, que a IA não conhecia, então tive que ajustar o código gerado, modo de navegação também, hooks em lugares errados. Foram 4 prompts grandes, que geraram bastante código, mas no final consegui gerar o frontend funcional, com algumas melhorias que irei fazer depois.
+
+Prompt 1: Painel do Organizador (Criação e Gestão de Eventos)
+
+Objetivo: Permitir que o Organizador crie e visualize seus eventos no backend.
+
+Dando continuidade ao frontend do MeuIngresso, vamos construir o painel do Organizador integrado à API.
+
+Tarefas desta etapa:
+
+1. Crie o layout em app/organizer/layout.tsx protegido exclusivamente para o papel ORGANIZER.
+2. Implemente a página app/organizer/events/new/page.tsx com formulário em React Hook Form + Zod para cadastrar eventos (campos: title, date, location, capacity, price e opcionalmente externalRef para ID do TMDB).
+3. Conecte o formulário à API real chamando POST /events via TanStack React Query (useMutation).
+4. Crie a página app/organizer/dashboard/page.tsx listando os eventos do organizador consumindo GET /events.
+5. Adicione feedback visual com Toast (ex: Sonner ou React Hot Toast) para casos de sucesso e tratamento de erros da API.
+
+Retorne o código do layout protegido, o serviço de eventos e a página do formulário de criação de eventos.
+
+Prompt 2: Área do Cliente - Catálogo, Detalhes e Reserva com Concorrência
+
+Objetivo: Construir o fluxo onde o cliente explora eventos e realiza reservas com tratamento de concorrência de assentos.
+
+Agora vamos focar no fluxo do Cliente para listagem, detalhes de evento e reserva de ingressos.
+
+Tarefas desta etapa:
+
+1. Crie a página de catálogo em app/client/events/page.tsx consumindo a rota GET /events.
+2. Crie a página de detalhes do evento em app/client/events/[id]/page.tsx consumindo GET /events/:id.
+3. Desenvolva o componente visual de seleção de ingressos com duas abas/opções:
+   - Quantidade de ingressos de pista (quantity).
+   - Mapa interativo de assentos estilo cinema/teatro selecionando o código da cadeira (seatCode, ex: "A-10").
+4. Implemente o envio da reserva chamando POST /reservations.
+
+Retorne os componentes da listagem de eventos, a página de detalhes e a lógica do mapa de assentos integrado à API.
+
+Prompt 3: Área do Cliente - Checkout, "Meus Ingressos" e Compartilhamento
+
+Objetivo: Processar o checkout simulado, exibir bilhetes com QR Code e criar a visualização de link compartilhado.
+
+Com a reserva em status PENDING, vamos construir o modal de pagamento simulado e a carteira de ingressos do Cliente.
+
+Tarefas desta etapa:
+
+1. Crie o modal de checkout simulado que envia a decisão do cliente para POST /reservations/:id/checkout com os payloads {"decision": "CONFIRM"} ou {"decision": "DECLINE"}.
+2. Em caso de DECLINE, exiba feedback de reserva cancelada. Em caso de CONFIRM, redirecione para a página "Meus Ingressos".
+3. Desenvolva a página app/client/my-tickets/page.tsx consumindo GET /tickets/me.
+   Para cada ingresso retornado com status VALID, renderize visualmente o QR Code utilizando o valor da propriedade code (UUID v4).
+4. Adicione um botão "Compartilhar Ingresso" que copia a propriedade shareLink (link assinado com HMAC retornado pela API) para a área de transferência.
+5. Crie a rota pública app/tickets/shared/[id]/page.tsx que consome GET /tickets/shared/:id?token=... para permitir que terceiros visualizem um ingresso compartilhado.
+
+Retorne o código do modal de checkout, a página "Meus Ingressos" com QR Code e a página pública do ingresso compartilhado.
+
+Prompt 4: Tela da Portaria - Validação por QR Code e Câmera
+
+Objetivo: Criar o aplicativo da Portaria para validação de ingressos na entrada do evento.
+
+Para finalizar o frontend do MeuIngresso, vamos construir a tela da Portaria conectada ao endpoint de validação atômica do backend.
+
+Tarefas desta etapa:
+
+1. Crie a página protegida app/gate/validate/page.tsx acessível apenas para o papel GATEKEEPER.
+2. Adicione um seletor no topo da tela para a portaria escolher em qual evento está trabalhando (armazenando o eventId).
+3. Integre a câmera do dispositivo via html5-qrcode ou react-qr-reader para ler o código QR do ingresso (code).
+4. Adicione um campo de formulário como alternativa para digitação manual do código.
+5. Envie a validação para o endpoint POST /tickets/validate-entry passando { "code": "...", "eventId": "..." }.
+6. Renderize o resultado visual na tela com destaque de cor e mensagem baseando-se no validationStatus retornado pela API:
+
+- VALID: Card/Borda Verde ("Entrada Liberada").
+- ALREADY_USED: Card/Borda Laranja ("Ingresso Já Utilizado").
+- INVALID: Card/Borda Vermelha ("Código Inválido").
+- WRONG_EVENT: Card/Borda Roxa/Amarela ("Ingresso Pertence a Outro Evento").
+
+Retorne o componente completo da Portaria com a integração de câmera e o tratamento estilizado dos 4 status de validação.
+
+Depois de dos prompts alguns outros ajustes finos, prompts bem menores para ajustes no geral. Adiantei parte do que eu ia precisar para deploy e para pegar pontos extras do docker-compose, deixei mais ou menos preparado para fazer deploy amanhã, mas talvez ainda precise de fazer alguns ajustes. No fechamento do dia de hoje, fiz varias melhorias evolutivas gerais backend e frontend:
+
+Backend:
+
+- Aumentei bastante o nível de integração com API do TMDB, agora faz busca por filmes populares.
+- Refatorei a rota de reservas para que o cliente possa reservar assentos e implementei a regra de definição de assentos [Fila][Número] (Ex: A-10, B-5, C-3) depois de 10 números troca a fila. Prendo botar um limite de 50 assentos por evento, mas deixei até infinito.
+- Tive que refatorar os teste devido a mudança de regras.
+
+Frontend:
+
+- Refatorei a página de detalhes do evento para que o cliente possa escolher apenas assentos não exitindo opção de pista, quero que aplicação fique mais parecida com cinema/teatro. Muitas mudanças em componentes e páginas associadas, mas no geral consegui manter o padrão de código que estava usando.
+- Refatorei layout da criação de eventos agora totalmente alinhada com as mudanças do backend, agora o organizador consegue extrair mais informações dos eventos por causa das mudanças do uso da API do TMDB. Não a criação de eventos mas também qualquer outra rota que mostre informações do evento, como a listagem de eventos do organizador e a listagem de eventos para o cliente e etc. Tudo que tenha relação com eventos teve ganhos incriveis.
+
+Muitas alterações, talvez eu tenha esquecido de registrar algumas, mas no geral foi isso que fiz hoje. Acredito que amanhã consigo finalizar o desafio, registrar o que foi feito e comentar do eu achei que poderia ter sido feito melhor, e também registrar o que eu faria diferente se tivesse mais tempo.
