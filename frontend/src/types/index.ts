@@ -49,6 +49,7 @@ export interface Event {
   voteAverage?: number | null;
   organizerId: string;
   organizer?: User;
+  occupiedSeats?: string[];
 }
 
 export type ReservationStatus = "PENDING" | "CONFIRMED" | "CANCELLED";

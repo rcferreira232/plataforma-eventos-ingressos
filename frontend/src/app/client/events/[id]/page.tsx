@@ -34,10 +34,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
-import {
-  SeatSelector,
-  ReservationType,
-} from "@/components/events/seat-selector";
+import { SeatSelector } from "@/components/events/seat-selector";
 import { CheckoutModal } from "@/components/checkout/checkout-modal";
 import Image from "next/image";
 
@@ -48,14 +45,7 @@ interface EventDetailsContentProps {
 function EventDetailsContent({ id }: EventDetailsContentProps) {
   const queryClient = useQueryClient();
 
-  const [selection, setSelection] = useState<{
-    type: ReservationType;
-    quantity: number;
-    seatCode?: string;
-  }>({
-    type: "pista",
-    quantity: 1,
-  });
+  const [selectedSeatCode, setSelectedSeatCode] = useState<string | null>(null);
 
   const [activeReservation, setActiveReservation] =
     useState<Reservation | null>(null);
@@ -78,7 +68,7 @@ function EventDetailsContent({ id }: EventDetailsContentProps) {
       if (!event) {
         throw new Error("Evento não encontrado");
       }
-      if (selection.type === "seat" && !selection.seatCode) {
+      if (!selectedSeatCode) {
         throw new Error(
           "Por favor, selecione um assento no mapa antes de prosseguir.",
         );
@@ -86,8 +76,8 @@ function EventDetailsContent({ id }: EventDetailsContentProps) {
 
       return createReservation({
         eventId: event.id,
-        quantity: selection.quantity,
-        seatCode: selection.type === "seat" ? selection.seatCode : undefined,
+        quantity: 1,
+        seatCode: selectedSeatCode,
       });
     },
     onSuccess: (reservation) => {
@@ -95,7 +85,7 @@ function EventDetailsContent({ id }: EventDetailsContentProps) {
       setIsCheckoutOpen(true);
       toast.success("Reserva realizada com sucesso!", {
         description:
-          "Seu assento foi garantido. Conclua o checkout para emitir os bilhetes.",
+          "Seu assento foi garantido. Conclua o checkout para emitir o bilhete.",
       });
     },
     onError: (err) => {
@@ -108,7 +98,7 @@ function EventDetailsContent({ id }: EventDetailsContentProps) {
 
         // Invalida cache e força o cliente a escolher outro assento
         queryClient.invalidateQueries({ queryKey: ["event", id] });
-        setSelection((prev) => ({ ...prev, seatCode: undefined }));
+        setSelectedSeatCode(null);
       } else {
         toast.error("Erro ao realizar reserva", {
           description: getApiErrorMessage(err),
@@ -116,6 +106,13 @@ function EventDetailsContent({ id }: EventDetailsContentProps) {
       }
     },
   });
+
+  const handleCheckoutClose = () => {
+    setIsCheckoutOpen(false);
+    setActiveReservation(null);
+    setSelectedSeatCode(null);
+    queryClient.invalidateQueries({ queryKey: ["event", id] });
+  };
 
   if (isLoading) {
     return (
@@ -149,11 +146,8 @@ function EventDetailsContent({ id }: EventDetailsContentProps) {
     );
   }
 
-  const isSeatTypeWithoutCode =
-    selection.type === "seat" && !selection.seatCode;
-
-  const totalPrice =
-    event.price * (selection.type === "pista" ? selection.quantity : 1);
+  const occupiedSeats = event.occupiedSeats || [];
+  const totalPrice = event.price;
 
   return (
     <div className='space-y-8 max-w-4xl mx-auto'>
@@ -273,13 +267,17 @@ function EventDetailsContent({ id }: EventDetailsContentProps) {
             </div>
           </div>
 
-          {/* Componente de Seleção de Ingressos e Assentos */}
+          {/* Componente de Seleção de Assentos */}
           <div className='space-y-3 pt-2'>
             <h3 className='text-base font-bold text-foreground'>
-              Selecione o Tipo de Ingresso ou Assento
+              Selecione o seu Assento no Mapa
             </h3>
             <SeatSelector
-              onSelectionChange={(newSelection) => setSelection(newSelection)}
+              onSelectionChange={(selection) =>
+                setSelectedSeatCode(selection.seatCode)
+              }
+              occupiedSeats={occupiedSeats}
+              capacity={event.capacity}
               disabled={reserveMutation.isPending}
             />
           </div>
@@ -297,7 +295,7 @@ function EventDetailsContent({ id }: EventDetailsContentProps) {
 
           <Button
             size='lg'
-            disabled={reserveMutation.isPending || isSeatTypeWithoutCode}
+            disabled={reserveMutation.isPending || !selectedSeatCode}
             onClick={() => reserveMutation.mutate()}
             className='w-full sm:w-auto gap-2 font-bold px-8 bg-primary hover:bg-primary/90 text-primary-foreground'
           >
@@ -309,17 +307,18 @@ function EventDetailsContent({ id }: EventDetailsContentProps) {
             ) : (
               <>
                 <Sparkles className='size-5' />
-                Reservar Ingresso
+                Reservar Assento{" "}
+                {selectedSeatCode ? `(${selectedSeatCode})` : ""}
               </>
             )}
           </Button>
         </CardFooter>
       </Card>
 
-      {/* Modal de Checkout Simulado */}
+      {/* Modal de Checkout */}
       <CheckoutModal
         isOpen={isCheckoutOpen}
-        onClose={() => setIsCheckoutOpen(false)}
+        onClose={handleCheckoutClose}
         reservation={activeReservation}
       />
     </div>
