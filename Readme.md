@@ -34,7 +34,10 @@ Para rodar o projeto do zero, você precisará de:
 - **Git**: para clonar o repositório
 
 ```bash
-git clone <URL_DO_REPOSITORIO>
+# SSH
+git clone git@github.com:rcferreira232/plataforma-eventos-ingressos.git
+# ou HTTPS
+git clone https://github.com/rcferreira232/plataforma-eventos-ingressos.git
 cd plataforma-eventos-ingressos
 ```
 
@@ -171,13 +174,13 @@ Observação: Faça apenas se tiver pulado a etapa de configuração local.
 
 _(Opcional)_ Se possuir uma API Key do TMDB, defina `TMDB_API_KEY=sua_chave` no arquivo `.env`. Caso contrário, pode afetar a funcionalidade de alguns recursos.
 
-### 3. Subir todos os serviços
+### 2. Subir todos os serviços
 
 ```bash
 docker compose up --build -d
 ```
 
-### 4. Executar Comandos do Prisma
+### 3. Executar Comandos do Prisma
 
 Caso precisa rodar os comandos do Prisma, execute os seguintes comandos:
 
