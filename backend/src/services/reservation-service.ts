@@ -195,6 +195,10 @@ export class ReservationService {
     });
   }
 
+  async getOccupiedSeatsByEvent(eventId: string): Promise<string[]> {
+    return this.reservationRepository.getOccupiedSeatsByEvent(eventId);
+  }
+
   private async runSerializableTransaction<T>(
     operation: (tx: Prisma.TransactionClient) => Promise<T>,
     maxRetries = 3,

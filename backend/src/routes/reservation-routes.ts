@@ -34,4 +34,10 @@ reservationRouter.post(
   reservationController.checkout,
 );
 
+reservationRouter.get(
+  "/occupied-seats/:eventId",
+  authMiddleware(["CUSTOMER", "ORGANIZER"]),
+  reservationController.occupiedSeats,
+);
+
 export { reservationRouter };
