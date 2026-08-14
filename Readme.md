@@ -219,7 +219,7 @@ Após rodar o comando `pnpm prisma db seed`, os seguintes usuários padrão esta
 Para executar os testes (no diretório `backend`):
 
 ```bash
-# Executa todos os testes de integração
+# Executa todos os testes, o banco tem que estar rodando, schema do Prisma sincronizado
 pnpm test
 
 # Validação de tipagem TypeScript
