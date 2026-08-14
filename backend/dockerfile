@@ -6,12 +6,12 @@ RUN corepack enable && corepack prepare pnpm@latest --activate
 
 COPY package.json pnpm-lock.yaml* ./
 
+COPY prisma ./prisma
+
 RUN pnpm install --frozen-lockfile
 
 COPY . .
 
-RUN pnpm prisma generate
-
 EXPOSE 3333
 
-CMD ["sh", "-c", "npx prisma db push && npx prisma db seed && pnpm dev"]
+CMD ["sh", "-c", "test -f .env || cp .env.example .env && npx prisma db push && npx prisma db seed && pnpm dev"]
