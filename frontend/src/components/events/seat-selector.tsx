@@ -5,7 +5,7 @@ import { Check } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 export interface SeatSelectorProps {
-  onSelectionChange: (selection: { seatCode: string | null }) => void;
+  onSelectionChange: (selection: { seatCodes: string[] }) => void;
   occupiedSeats?: string[];
   capacity?: number;
   disabled?: boolean;
@@ -31,7 +31,7 @@ export function SeatSelector({
   capacity = 50,
   disabled = false,
 }: SeatSelectorProps) {
-  const [selectedSeat, setSelectedSeat] = useState<string | null>(null);
+  const [selectedSeats, setSelectedSeats] = useState<string[]>([]);
 
   const totalRows = Math.max(1, Math.ceil(capacity / SEATS_PER_ROW));
   const rows = Array.from({ length: totalRows }, (_, i) => getRowName(i));
@@ -39,27 +39,26 @@ export function SeatSelector({
   const handleSelectSeat = (seatCode: string) => {
     if (occupiedSeats.includes(seatCode) || disabled) return;
 
-    if (selectedSeat === seatCode) {
-      setSelectedSeat(null);
-      onSelectionChange({ seatCode: null });
+    let updated: string[];
+    if (selectedSeats.includes(seatCode)) {
+      updated = selectedSeats.filter((s) => s !== seatCode);
     } else {
-      setSelectedSeat(seatCode);
-      onSelectionChange({ seatCode });
+      updated = [...selectedSeats, seatCode];
     }
+
+    setSelectedSeats(updated);
+    onSelectionChange({ seatCodes: updated });
   };
 
   let currentSeatIndex = 0;
 
   return (
     <div className='p-6 rounded-xl border border-border bg-card/60 space-y-6'>
-      {/* Tela Simula Palco / Cinema */}
       <div className='w-full max-w-md mx-auto py-1.5 px-4 rounded-lg bg-primary/20 border border-primary/30 text-center'>
         <span className='text-xs font-semibold tracking-widest text-primary uppercase'>
           PALCO / TELA
         </span>
       </div>
-
-      {/* Legenda de Legibilidade */}
       <div className='flex flex-wrap items-center justify-center gap-4 text-xs'>
         <div className='flex items-center gap-1.5'>
           <span className='size-3.5 rounded border border-border bg-card' />
@@ -70,7 +69,7 @@ export function SeatSelector({
           <span className='text-muted-foreground'>Selecionado</span>
         </div>
         <div className='flex items-center gap-1.5'>
-          <span className='size-3.5 rounded bg-muted/60 border border-muted opacity-50 cursor-not-allowed' />
+          <span className='size-3.5 rounded bg-destructive/20 border border-destructive/50 text-destructive' />
           <span className='text-muted-foreground'>Ocupado</span>
         </div>
       </div>
@@ -91,7 +90,7 @@ export function SeatSelector({
                 const seatNumber = index + 1;
                 const seatCode = `${row}-${seatNumber}`;
                 const isOccupied = occupiedSeats.includes(seatCode);
-                const isSelected = selectedSeat === seatCode;
+                const isSelected = selectedSeats.includes(seatCode);
 
                 return (
                   <button
@@ -108,7 +107,7 @@ export function SeatSelector({
                       isSelected
                         ? "bg-primary border-primary text-primary-foreground shadow-md scale-105"
                         : isOccupied
-                          ? "bg-muted/40 border-muted text-muted-foreground/40 cursor-not-allowed line-through"
+                          ? "bg-destructive/15 border-destructive/40 text-destructive/70 cursor-not-allowed opacity-80"
                           : "bg-card border-border text-foreground hover:border-primary hover:text-primary"
                     }`}
                   >
@@ -122,14 +121,25 @@ export function SeatSelector({
       </div>
 
       <div className='text-center pt-2 border-t border-border/40'>
-        {selectedSeat ? (
-          <Badge variant='success' className='text-xs px-3 py-1 font-mono'>
-            Assento selecionado: {selectedSeat}
-          </Badge>
+        {selectedSeats.length > 0 ? (
+          <div className='flex flex-wrap items-center justify-center gap-1.5'>
+            <span className='text-xs text-muted-foreground mr-1'>
+              Assento(s) selecionado(s):
+            </span>
+            {selectedSeats.map((seat) => (
+              <Badge
+                key={seat}
+                variant='success'
+                className='text-xs px-2.5 py-0.5 font-mono'
+              >
+                {seat}
+              </Badge>
+            ))}
+          </div>
         ) : (
           <span className='text-xs text-muted-foreground italic'>
-            Clique em uma cadeira disponível no mapa acima para escolher seu
-            lugar.
+            Clique em uma ou mais cadeiras disponíveis no mapa acima para
+            escolher seus lugares.
           </span>
         )}
       </div>

@@ -24,6 +24,10 @@ export interface IReservationRepository {
     seatCode: string,
     tx?: TransactionClient,
   ): Promise<Reservation | null>;
+  getOccupiedSeatsByEvent(
+    eventId: string,
+    tx?: TransactionClient,
+  ): Promise<string[]>;
 }
 
 export class PrismaReservationRepository implements IReservationRepository {
@@ -87,5 +91,25 @@ export class PrismaReservationRepository implements IReservationRepository {
         },
       },
     });
+  }
+  async getOccupiedSeatsByEvent(
+    eventId: string,
+    tx: TransactionClient = prisma,
+  ): Promise<string[]> {
+    const reservations = await tx.reservation.findMany({
+      where: {
+        eventId,
+        status: {
+          in: ["PENDING", "CONFIRMED"],
+        },
+      },
+      select: {
+        seatCode: true,
+      },
+    });
+
+    return reservations
+      .map((reservation) => reservation.seatCode)
+      .filter((seatCode): seatCode is string => seatCode !== null);
   }
 }

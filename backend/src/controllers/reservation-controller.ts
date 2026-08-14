@@ -36,6 +36,29 @@ export class ReservationController {
     }
   };
 
+  occupiedSeats = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
+    try {
+      const eventId = req.params.eventId;
+      if (typeof eventId !== "string" || eventId.length === 0) {
+        throw new BadRequestError("Event ID is required");
+      }
+
+      const occupiedSeats =
+        await this.reservationService.getOccupiedSeatsByEvent(eventId);
+
+      res.status(200).json({
+        status: "success",
+        data: occupiedSeats,
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
   checkout = async (
     req: Request,
     res: Response,

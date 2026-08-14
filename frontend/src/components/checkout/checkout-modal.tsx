@@ -18,25 +18,32 @@ import { LoadingSpinner } from "@/components/ui/loading-spinner";
 interface CheckoutModalProps {
   isOpen: boolean;
   onClose: () => void;
-  reservation: Reservation | null;
+  reservations: Reservation[] | null;
   onDecline?: () => void;
 }
 
 export function CheckoutModal({
   isOpen,
   onClose,
-  reservation,
+  reservations,
   onDecline,
 }: CheckoutModalProps) {
   const router = useRouter();
   const queryClient = useQueryClient();
 
+  const activeReservations = reservations ?? [];
+
   const mutation = useMutation({
-    mutationFn: (decision: "CONFIRM" | "DECLINE") => {
-      if (!reservation) {
+    mutationFn: async (decision: "CONFIRM" | "DECLINE") => {
+      if (activeReservations.length === 0) {
         throw new Error("Nenhuma reserva selecionada");
       }
-      return checkoutReservation(reservation.id, { decision });
+      const results = [];
+      for (const res of activeReservations) {
+        const result = await checkoutReservation(res.id, { decision });
+        results.push(result);
+      }
+      return results;
     },
     onSuccess: (data, decision) => {
       if (decision === "CONFIRM") {
@@ -48,7 +55,7 @@ export function CheckoutModal({
         onClose();
         router.push("/client/my-tickets");
       } else {
-        toast.warning("Reserva cancelada", {
+        toast.warning("Reserva(s) cancelada(s)", {
           description: "O pagamento foi recusado e os assentos foram liberados.",
         });
         queryClient.invalidateQueries({ queryKey: ["events"] });
@@ -65,13 +72,17 @@ export function CheckoutModal({
     },
   });
 
-  if (!reservation) {
+  if (!reservations || activeReservations.length === 0) {
     return null;
   }
 
-  const event = reservation.event;
+  const firstRes = activeReservations[0];
+  const event = firstRes.event;
   const unitPrice = event?.price ?? 0;
-  const totalPrice = unitPrice * (reservation.quantity || 1);
+  const seatCodes = activeReservations
+    .map((r) => r.seatCode)
+    .filter((s): s is string => Boolean(s));
+  const totalPrice = unitPrice * activeReservations.length;
 
   return (
     <Modal
@@ -134,18 +145,20 @@ export function CheckoutModal({
               )}
             </div>
             <Badge variant="warning" className="text-xs uppercase">
-              RESERVA PENDENTE
+              {activeReservations.length > 1
+                ? `${activeReservations.length} RESERVAS PENDENTES`
+                : "RESERVA PENDENTE"}
             </Badge>
           </div>
 
           <div className="border-t border-border pt-3 flex flex-wrap items-center justify-between text-sm gap-2">
             <div className="flex items-center gap-2">
               <Ticket className="size-4 text-primary" />
-              <span className="text-muted-foreground">Lugar / Tipo:</span>
+              <span className="text-muted-foreground">Lugar(es):</span>
               <span className="font-semibold text-foreground">
-                {reservation.seatCode
-                  ? `Assento ${reservation.seatCode}`
-                  : `${reservation.quantity} ingresso(s) Pista`}
+                {seatCodes.length > 0
+                  ? `Assento(s) ${seatCodes.join(", ")}`
+                  : `${activeReservations.length} ingresso(s)`}
               </span>
             </div>
 
