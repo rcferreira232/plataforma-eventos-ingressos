@@ -33,56 +33,11 @@ Para rodar o projeto do zero, você precisará de:
 - **Docker & Docker Compose**: instalados e ativos na sua máquina
 - **Git**: para clonar o repositório
 
-## Opção 1: Executando TUDO com Docker Compose
-
-Esta opção constrói os contêineres do PostgreSQL, Backend e Frontend de forma orquestrada.
-
-### 1. Clonar o repositório
-
-```bash
-git clone <URL_DO_REPOSITORIO>
-cd plataforma-eventos-ingressos
-```
-
-### 2. Configurar Variáveis de Ambiente Globais
-
-Copie o arquivo `.env.example` da raiz para `.env`:
-
-```bash
-cp .env.example .env
-```
-
-_(Opcional)_ Se possuir uma API Key do TMDB, defina `TMDB_API_KEY=sua_chave` no arquivo `.env`. Caso contrário, pode afetar a funcionalidade de alguns recursos.
-
-### 3. Subir todos os serviços
-
-```bash
-docker compose up --build -d
-```
-
-### 4. Executar Migrações e Seed do Banco
-
-Com os contêineres rodando, execute o seed no container do backend:
-
-```bash
-docker compose exec backend pnpm db:push
-docker compose exec backend pnpm prisma db seed
-```
-
-### Acessar as Aplicações:
-
-- **Frontend**: [http://localhost:3000](http://localhost:3000)
-- **Backend API**: [http://localhost:3333](http://localhost:3333)
-
-Para parar os contêineres:
-
-```bash
-docker compose down
-```
-
-## Opção 2: Executando Localmente do Zero (Backend e Frontend Separados)
+## Opção 1: Executando Localmente do Zero (Backend e Frontend Separados)
 
 Se você deseja executar o Backend e Frontend individualmente em suas próprias janelas de terminal (para desenvolvimento ou debug), siga este passo a passo:
+
+Observações: Execute primeiramente de forma local, sem Docker Compose, para garantir que tudo funcione corretamente antes de usar a opção de orquestração. Executar diretamente com Docker Compose é mais rápido, mas pode gerar certos inconvenientes em relação a permissões de arquivos (tendo que usar `sudo`pois o Docker Compose cria arquivos com permissões de root).
 
 ### Passo 1: Subindo o Banco PostgreSQL
 
@@ -186,6 +141,54 @@ docker compose up -d postgres
    > Frontend rodando em: `http://localhost:3000`
 
 ---
+
+## Opção 2: Executando TUDO com Docker Compose
+
+Esta opção constrói os contêineres do PostgreSQL, Backend e Frontend de forma orquestrada.
+
+### 1. Clonar o repositório
+
+```bash
+git clone <URL_DO_REPOSITORIO>
+cd plataforma-eventos-ingressos
+```
+
+### 2. Configurar Variáveis de Ambiente Globais
+
+Copie o arquivo `.env.example` da raiz para `.env`:
+
+```bash
+cp .env.example .env
+```
+
+_(Opcional)_ Se possuir uma API Key do TMDB, defina `TMDB_API_KEY=sua_chave` no arquivo `.env`. Caso contrário, pode afetar a funcionalidade de alguns recursos.
+
+### 3. Subir todos os serviços
+
+```bash
+docker compose up --build -d
+```
+
+### 4. Executar Comandos do Prisma
+
+Caso precisa rodar os comandos do Prisma, execute os seguintes comandos:
+
+```bash
+docker compose exec backend pnpm db:generate
+docker compose exec backend pnpm db:push
+docker compose exec backend pnpm prisma db seed
+```
+
+### Acessar as Aplicações:
+
+- **Frontend**: [http://localhost:3000](http://localhost:3000)
+- **Backend API**: [http://localhost:3333](http://localhost:3333)
+
+Para parar os contêineres:
+
+```bash
+docker compose down
+```
 
 ## Usuários e Credenciais do Seed
 
