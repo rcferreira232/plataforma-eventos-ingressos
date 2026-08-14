@@ -123,4 +123,37 @@ describe("Testes de Integração de Eventos", () => {
       expect(response.body.data[0]).toHaveProperty("organizer");
     });
   });
+
+  describe("GET /events/:id", () => {
+    it("Deve buscar evento pelo ID com sucesso", async () => {
+      const createRes = await request(app)
+        .post("/events")
+        .set("Authorization", `Bearer ${organizerToken}`)
+        .send({
+          title: "Evento Individual Teste",
+          date: new Date().toISOString(),
+          location: "Auditório Central",
+          capacity: 100,
+          price: 50.0,
+        })
+        .expect(201);
+
+      const eventId = createRes.body.data.id;
+
+      const response = await request(app).get(`/events/${eventId}`).expect(200);
+
+      expect(response.body).toHaveProperty("status", "success");
+      expect(response.body.data).toHaveProperty("id", eventId);
+      expect(response.body.data.title).toBe("Evento Individual Teste");
+    });
+
+    it("Deve retornar status 404 quando o ID do evento não existir", async () => {
+      const response = await request(app)
+        .get("/events/non-existent-event-id")
+        .expect(404);
+
+      expect(response.body).toHaveProperty("status", "error");
+      expect(response.body).toHaveProperty("message", "Event not found");
+    });
+  });
 });

@@ -210,6 +210,64 @@ describe("Testes de Integração de Usuário", () => {
     });
   });
 
+  describe("POST /users/login", () => {
+    it("Deve realizar login com sucesso e retornar token JWT", async () => {
+      await request(app).post("/users").send(testUser).expect(201);
+
+      const response = await request(app)
+        .post("/users/login")
+        .send({
+          email: testUser.email,
+          password: testUser.password,
+        })
+        .expect(200);
+
+      expect(response.body).toHaveProperty("status", "success");
+      expect(response.body.data).toHaveProperty("token");
+      expect(typeof response.body.data.token).toBe("string");
+    });
+
+    it("Deve falhar ao tentar login com email inexistente", async () => {
+      const response = await request(app)
+        .post("/users/login")
+        .send({
+          email: "notfound@example.com",
+          password: "password123",
+        })
+        .expect(401);
+
+      expect(response.body).toHaveProperty("status", "error");
+      expect(response.body).toHaveProperty("message", "Invalid email or password");
+    });
+
+    it("Deve falhar ao tentar login com senha incorreta", async () => {
+      await request(app).post("/users").send(testUser).expect(201);
+
+      const response = await request(app)
+        .post("/users/login")
+        .send({
+          email: testUser.email,
+          password: "wrongpassword",
+        })
+        .expect(401);
+
+      expect(response.body).toHaveProperty("status", "error");
+      expect(response.body).toHaveProperty("message", "Invalid email or password");
+    });
+
+    it("Deve falhar ao tentar login sem enviar o email ou senha", async () => {
+      const response = await request(app)
+        .post("/users/login")
+        .send({
+          email: testUser.email,
+        })
+        .expect(400);
+
+      expect(response.body).toHaveProperty("status", "error");
+      expect(response.body).toHaveProperty("message", "Validation failed");
+    });
+  });
+
   describe("GET /users", () => {
     it("Deve listar todos os usuários cadastrados", async () => {
       await request(app).post("/users").send(testUser).expect(201);
