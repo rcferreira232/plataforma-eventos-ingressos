@@ -2,7 +2,8 @@
 /node_modules
 
 # Ignore environment variable files
-.env*
+.env
+.env.prod
 
 # Ignore coverage reports
 /coverage
