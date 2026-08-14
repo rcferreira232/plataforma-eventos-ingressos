@@ -33,13 +33,26 @@ Para rodar o projeto do zero, você precisará de:
 - **Docker & Docker Compose**: instalados e ativos na sua máquina
 - **Git**: para clonar o repositório
 
+```bash
+git clone <URL_DO_REPOSITORIO>
+cd plataforma-eventos-ingressos
+```
+
 ## Opção 1: Executando Localmente do Zero (Backend e Frontend Separados)
 
 Se você deseja executar o Backend e Frontend individualmente em suas próprias janelas de terminal (para desenvolvimento ou debug), siga este passo a passo:
 
 Observações: Execute primeiramente de forma local, sem Docker Compose, para garantir que tudo funcione corretamente antes de usar a opção de orquestração. Executar diretamente com Docker Compose é mais rápido, mas pode gerar certos inconvenientes em relação a permissões de arquivos (tendo que usar `sudo`pois o Docker Compose cria arquivos com permissões de root).
 
-### Passo 1: Subindo o Banco PostgreSQL
+### Passo 1. Configurar Variáveis de Ambiente Globais
+
+Copie o arquivo `.env.example` da raiz para `.env`:
+
+```bash
+cp .env.example .env
+```
+
+### Passo 2: Subindo o Banco PostgreSQL
 
 Você pode utilizar o container Docker de PostgreSQL configurado na raiz:
 
@@ -52,7 +65,7 @@ docker compose up -d postgres
 
 ---
 
-### Passo 2: Configurando e Rodando o Backend
+### Passo 3: Configurando e Rodando o Backend
 
 1. **Acesse a pasta do backend:**
 
@@ -108,7 +121,7 @@ docker compose up -d postgres
 
 ---
 
-### Passo 3: Configurando e Rodando o Frontend
+### Passo 4: Configurando e Rodando o Frontend
 
 1. **Abra uma nova janela de terminal e acesse a pasta do frontend:**
 
@@ -146,20 +159,15 @@ docker compose up -d postgres
 
 Esta opção constrói os contêineres do PostgreSQL, Backend e Frontend de forma orquestrada.
 
-### 1. Clonar o repositório
-
-```bash
-git clone <URL_DO_REPOSITORIO>
-cd plataforma-eventos-ingressos
-```
-
-### 2. Configurar Variáveis de Ambiente Globais
+### 1. Configurar Variáveis de Ambiente Globais
 
 Copie o arquivo `.env.example` da raiz para `.env`:
 
 ```bash
 cp .env.example .env
 ```
+
+Observação: Faça apenas se tiver pulado a etapa de configuração local.
 
 _(Opcional)_ Se possuir uma API Key do TMDB, defina `TMDB_API_KEY=sua_chave` no arquivo `.env`. Caso contrário, pode afetar a funcionalidade de alguns recursos.
 
