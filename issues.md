@@ -6,4 +6,4 @@
 
 - [] Leitor de Qr Code, funciona mais lê o Qr Code mais vezes e muito rápido, fazendo assim uma leitura aprovando e e depois reprovando, por já ter lido o Qr Code, o que pode confundir o usuário.
 
-- [] Organizer dashboard: Menu do dashboard do organizador de baixo do header que é muito parecido com ele, causa certa estranheza (talvez remover)
+- [x] Organizer dashboard: Menu do dashboard do organizador de baixo do header que é muito parecido com ele, causa certa estranheza (talvez remover)
