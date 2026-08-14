@@ -16,7 +16,10 @@ import {
 } from "lucide-react";
 
 import { getEventById } from "@/services/events.service";
-import { createReservation } from "@/services/reservations.service";
+import {
+  createReservation,
+  getOccupiedSeats,
+} from "@/services/reservations.service";
 import { getApiErrorMessage } from "@/services/api";
 import { formatCurrency, formatDate } from "@/utils/formatters";
 import type { Event, Reservation } from "@/types";
@@ -45,10 +48,10 @@ interface EventDetailsContentProps {
 function EventDetailsContent({ id }: EventDetailsContentProps) {
   const queryClient = useQueryClient();
 
-  const [selectedSeatCode, setSelectedSeatCode] = useState<string | null>(null);
-
-  const [activeReservation, setActiveReservation] =
-    useState<Reservation | null>(null);
+  const [selectedSeatCodes, setSelectedSeatCodes] = useState<string[]>([]);
+  const [activeReservations, setActiveReservations] = useState<Reservation[]>(
+    [],
+  );
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
 
   const {
@@ -63,42 +66,60 @@ function EventDetailsContent({ id }: EventDetailsContentProps) {
     enabled: Boolean(id),
   });
 
+  const { data: occupiedSeats } = useQuery<string[]>({
+    queryKey: ["occupied-seats", id],
+    queryFn: () => getOccupiedSeats(id),
+    enabled: Boolean(id),
+  });
+
   const reserveMutation = useMutation({
-    mutationFn: () => {
+    mutationFn: async () => {
       if (!event) {
         throw new Error("Evento não encontrado");
       }
-      if (!selectedSeatCode) {
+      if (selectedSeatCodes.length === 0) {
         throw new Error(
-          "Por favor, selecione um assento no mapa antes de prosseguir.",
+          "Por favor, selecione ao menos um assento no mapa antes de prosseguir.",
         );
       }
 
-      return createReservation({
-        eventId: event.id,
-        quantity: 1,
-        seatCode: selectedSeatCode,
-      });
+      const createdReservations: Reservation[] = [];
+      for (const seatCode of selectedSeatCodes) {
+        const reservation = await createReservation({
+          eventId: event.id,
+          quantity: 1,
+          seatCode,
+        });
+        createdReservations.push(reservation);
+      }
+      return createdReservations;
     },
-    onSuccess: (reservation) => {
-      setActiveReservation(reservation);
+    onSuccess: (reservations) => {
+      setActiveReservations(reservations);
       setIsCheckoutOpen(true);
-      toast.success("Reserva realizada com sucesso!", {
-        description:
-          "Seu assento foi garantido. Conclua o checkout para emitir o bilhete.",
-      });
+      queryClient.invalidateQueries({ queryKey: ["occupied-seats", id] });
+      toast.success(
+        reservations.length > 1
+          ? "Reservas realizadas com sucesso!"
+          : "Reserva realizada com sucesso!",
+        {
+          description:
+            "Seu(s) assento(s) foi/foram garantido(s). Conclua o checkout para emitir o(s) bilhete(s).",
+        },
+      );
     },
     onError: (err) => {
-      // Trata o Requisito Crítico de Concorrência: 409 Conflict
       if (axios.isAxiosError(err) && err.response?.status === 409) {
-        toast.error("Este assento acabou de ser reservado por outro cliente", {
-          description:
-            "Por favor, escolha outro lugar disponível no mapa de assentos.",
-        });
+        toast.error(
+          "Um ou mais assentos selecionados já foram reservados por outro cliente",
+          {
+            description:
+              "Por favor, escolha outros lugares disponíveis no mapa de assentos.",
+          },
+        );
 
-        // Invalida cache e força o cliente a escolher outro assento
         queryClient.invalidateQueries({ queryKey: ["event", id] });
-        setSelectedSeatCode(null);
+        setSelectedSeatCodes([]);
       } else {
         toast.error("Erro ao realizar reserva", {
           description: getApiErrorMessage(err),
@@ -109,8 +130,8 @@ function EventDetailsContent({ id }: EventDetailsContentProps) {
 
   const handleCheckoutClose = () => {
     setIsCheckoutOpen(false);
-    setActiveReservation(null);
-    setSelectedSeatCode(null);
+    setActiveReservations([]);
+    setSelectedSeatCodes([]);
     queryClient.invalidateQueries({ queryKey: ["event", id] });
   };
 
@@ -146,8 +167,8 @@ function EventDetailsContent({ id }: EventDetailsContentProps) {
     );
   }
 
-  const occupiedSeats = event.occupiedSeats || [];
-  const totalPrice = event.price;
+  const seatCodesOccupied = occupiedSeats || [];
+  const totalPrice = event.price * (selectedSeatCodes.length || 1);
 
   return (
     <div className='space-y-8 max-w-4xl mx-auto'>
@@ -164,7 +185,6 @@ function EventDetailsContent({ id }: EventDetailsContentProps) {
         }
       />
 
-      {/* Hero / Banner do Evento (se houver backdrop ou poster) */}
       {event.backdropPath || event.posterPath ? (
         <div className='relative rounded-2xl overflow-hidden border border-border bg-card shadow-lg'>
           {event.backdropPath ? (
@@ -214,7 +234,6 @@ function EventDetailsContent({ id }: EventDetailsContentProps) {
         </div>
       ) : null}
 
-      {/* Card de Detalhes do Evento */}
       <Card>
         <CardHeader>
           <div className='flex flex-wrap items-center justify-between gap-2'>
@@ -267,16 +286,15 @@ function EventDetailsContent({ id }: EventDetailsContentProps) {
             </div>
           </div>
 
-          {/* Componente de Seleção de Assentos */}
           <div className='space-y-3 pt-2'>
             <h3 className='text-base font-bold text-foreground'>
-              Selecione o seu Assento no Mapa
+              Selecione seus Assentos no Mapa
             </h3>
             <SeatSelector
               onSelectionChange={(selection) =>
-                setSelectedSeatCode(selection.seatCode)
+                setSelectedSeatCodes(selection.seatCodes)
               }
-              occupiedSeats={occupiedSeats}
+              occupiedSeats={seatCodesOccupied}
               capacity={event.capacity}
               disabled={reserveMutation.isPending}
             />
@@ -286,7 +304,7 @@ function EventDetailsContent({ id }: EventDetailsContentProps) {
         <CardFooter className='flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-border pt-6 bg-card/40'>
           <div>
             <span className='text-xs text-muted-foreground block'>
-              Total a Pagar:
+              Total a Pagar ({selectedSeatCodes.length || 1} ingresso(s)):
             </span>
             <span className='text-2xl font-extrabold text-foreground'>
               {formatCurrency(totalPrice)}
@@ -295,7 +313,9 @@ function EventDetailsContent({ id }: EventDetailsContentProps) {
 
           <Button
             size='lg'
-            disabled={reserveMutation.isPending || !selectedSeatCode}
+            disabled={
+              reserveMutation.isPending || selectedSeatCodes.length === 0
+            }
             onClick={() => reserveMutation.mutate()}
             className='w-full sm:w-auto gap-2 font-bold px-8 bg-primary hover:bg-primary/90 text-primary-foreground'
           >
@@ -307,19 +327,20 @@ function EventDetailsContent({ id }: EventDetailsContentProps) {
             ) : (
               <>
                 <Sparkles className='size-5' />
-                Reservar Assento{" "}
-                {selectedSeatCode ? `(${selectedSeatCode})` : ""}
+                Reservar{" "}
+                {selectedSeatCodes.length > 0
+                  ? `${selectedSeatCodes.length} Assento(s)`
+                  : "Assento"}
               </>
             )}
           </Button>
         </CardFooter>
       </Card>
 
-      {/* Modal de Checkout */}
       <CheckoutModal
         isOpen={isCheckoutOpen}
         onClose={handleCheckoutClose}
-        reservation={activeReservation}
+        reservations={activeReservations}
       />
     </div>
   );
